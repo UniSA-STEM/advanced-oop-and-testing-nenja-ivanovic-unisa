@@ -51,7 +51,9 @@ class Log:
             raise TypeError("The logged action must be from the Action enumeration.")
 
         # add new row to log:
-        self.__log[len(self.__log)] = [at_datetime, actor_id, actor_name, action, details]
+        self.__log.loc[len(self.__log)] = {"Time": at_datetime, "Id": actor_id, "Name": actor_name, "Action": action,
+                                           "Details": details,
+                                           }
 
     def __str__(self) -> str:
         """
@@ -59,11 +61,11 @@ class Log:
         :return: A formatted string representing the log.
         """
         output = f"----------------------------------------------------------------------------------------------" \
-                 "\n{self.__name.capitalize()} LOG:"
+                 f"\n{self.__name.upper()} LOG:"
 
         # iterate through log records and add each as a formatted line:
-        for row in self.log.iterrows():
-            output += (f"\n[{row['Time']}] {row['Name']} (id: {row['Id']}) "
-                       f"{row['Action'].present_tense} {row['Details']}.")
+        for row in self.log.itertuples():
+            output += (f"\n[{row.Time}] {row.Name}_{row.Id} "
+                       f"{row.Action.present_tense} {row.Details}.")
         output += f"\n----------------------------------------------------------------------------------------------\n"
         return output
