@@ -14,7 +14,7 @@ class Action(Enum):
     EAT = ("eat", "eats")
     SLEEP = ("sleep", "sleeps")
     AGE = ("age", "ages")
-    SPEAk = ("speak", "says")
+    SPEAK = ("speak", "says")
 
     def __init__(self, imperative: str, present_tense: str):
         self.__imperative = imperative
