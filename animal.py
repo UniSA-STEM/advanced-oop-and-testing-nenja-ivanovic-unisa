@@ -10,9 +10,8 @@ This is my own work as defined by the University's Academic Integrity Policy.
 from abc import ABC
 from datetime import datetime  # automatically handles formatting issues with dates and times.
 
-import pandas as pd  # for easier storage and manipulation of data such as activity logs and dietary info.
-
 from action import Action
+from log import Log
 
 
 class Animal(ABC):
@@ -37,15 +36,8 @@ class Animal(ABC):
         self.__id = Animal._next_id
         Animal._next_id += 1
 
-        # create a dataframe to store activities
-        self.__log = pd.DataFrame({
-            "Time": pd.Series(dtype="object"),  # datetime object
-            "Id": pd.Series(dtype="int"),
-            "Name": pd.Series(dtype="string"),
-            "Action": pd.Series(dtype="object"),  # Action enumeration
-            "Details": pd.Series(dtype="string")
-
-        })
+        # create a new Log object to store records of activities
+        self.__log = Log(f"{self.name} Activity")
 
     def get_name(self) -> str:
         """Return a string representing the animal's name."""
@@ -59,7 +51,8 @@ class Animal(ABC):
         """Return an integer representing the animal's unique identifier."""
         return self.__id
 
-    def get_log(self):
+    def get_log(self) -> Log:
+        """ Returns the log of the animal's activities."""
         return self.__log
 
     name = property(get_name)
@@ -78,13 +71,10 @@ class Animal(ABC):
             raise TypeError("Number of years must be a numeric value.")
         if years <= 0:
             raise ValueError("The number of years to age must be greater than zero.")
-        if not isinstance(at_datetime, datetime):  # the datetime class will internally handle formatting issues.
-            raise TypeError("at_datetime must be a datetime object.")
 
         self.__age += years
-        # add event to log:
-        self.__log[len(self.__log)] = [at_datetime, self.id, self.name, Action.AGE,
-                                       f"(by {years} years to become {self.__age} years old)"]
+        self.log.new(self.id, self.name, Action.AGE, f"(by {years} years to become {self.__age} years old)",
+                     at_datetime)
 
     def sleep(self, at_datetime: datetime = datetime.now()):
         """
@@ -92,12 +82,7 @@ class Animal(ABC):
         :param at_datetime: The date and time at which the animal slept (default is when the method is called).
         :return: None
         """
-        if not isinstance(at_datetime, datetime):  # the datetime class will internally handle formatting issues.
-            raise TypeError("at_datetime must be a datetime object.")
-
-        # add event to log:
-        self.__log[len(self.__log)] = [at_datetime, self.id, self.name, Action.SLEEP,
-                                       f"(Zzz...)"]
+        self.log.new(self.id, self.name, Action.SLEEP, f"(Zzz...)", at_datetime)
 
     def make_sound(self, at_datetime: datetime = datetime.now()):
         """
@@ -105,16 +90,11 @@ class Animal(ABC):
         :param at_datetime: The date and time at which the animal made a sound (default is when the method is called).
         :return: None
         """
-        if not isinstance(at_datetime, datetime):  # the datetime class will internally handle formatting issues.
-            raise TypeError("at_datetime must be a datetime object.")
-
-        # add event to log:
-        self.__log[len(self.__log)] = [at_datetime, self.id, self.name, Action.SPEAK,
-                                       f"('{self.__sound}')"]
+        self.log.new(self.id, self.name, Action.SPEAK, f"('{self.__sound}')", at_datetime)
 
     def eat(self, food: str, quantity: int, at_datetime=datetime.now()):
         """
-
+        Log that the animal ate food.
         :param food: Name of the food eaten.
         :param quantity: Quantity of the food eaten.
         :param at_datetime: The date and time at which the animal ate food (default is when the method is called).
@@ -125,9 +105,4 @@ class Animal(ABC):
         if quantity <= 0:
             raise ValueError("The quantity of food eaten must be greater than zero.")
 
-        if not isinstance(at_datetime, datetime):  # the datetime class will internally handle formatting issues.
-            raise TypeError("at_datetime must be a datetime object.")
-
-        # add event to log:
-        self.__log[len(self.__log)] = [at_datetime, self.id, self.name, Action.AGE,
-                                       f"({quantity}x {food})"]
+        self.log.new(self.id, self.name, Action.EAT, f"({quantity}x {food})", at_datetime)
