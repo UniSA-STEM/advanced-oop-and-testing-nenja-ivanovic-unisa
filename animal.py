@@ -92,7 +92,7 @@ class Animal(ABC):
         """
         self.log.new(self.id, self.name, Action.SPEAK, f"('{self.__sound}')", at_datetime)
 
-    def eat(self, food: str, quantity: int, at_datetime=datetime.now()):
+    def eat(self, food: str, quantity: str, at_datetime=datetime.now()):
         """
         Log that the animal ate food.
         :param food: Name of the food eaten.
@@ -100,9 +100,5 @@ class Animal(ABC):
         :param at_datetime: The date and time at which the animal ate food (default is when the method is called).
         :return: None
         """
-        if not isinstance(quantity, float | int):
-            raise TypeError("Number of years must be a numeric value.")
-        if quantity <= 0:
-            raise ValueError("The quantity of food eaten must be greater than zero.")
 
-        self.log.new(self.id, self.name, Action.EAT, f"({quantity}x {food})", at_datetime)
+        self.log.new(self.id, self.name, Action.EAT, f"({quantity} {food})", at_datetime)
