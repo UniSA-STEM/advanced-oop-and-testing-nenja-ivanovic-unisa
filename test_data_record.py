@@ -12,13 +12,51 @@ import pytest
 
 from action import Action
 from log import Log
+from medical_log import MedicalLog
 from schedule import Schedule
+from severity import Severity
 
 
 class TestLog:
     @pytest.fixture
     def log1(self) -> Log:
         return Log("Jane's Activity")
+
+    @pytest.fixture
+    def medical_log1(self) -> MedicalLog:
+        medical_log1 = MedicalLog("Jane's Medical")
+        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13), "SubjectID": 1, "SubjectName": "Jane",
+                          "ObjectID": 34, "ObjectName": "John", "Action": Action.RECEIVE_HEALTH_CHECK,
+                          "Details": "Standard checkup - measure weight, inspect teeth, listen to heart.",
+                          "Severity": Severity.VERY_LOW, "Treatment": "NA"})
+        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13, 30), "SubjectID": 1, "SubjectName": "Jane",
+                          "ObjectID": 34, "ObjectName": "Dr.John", "Action": Action.RECEIVE_DIAGNOSIS,
+                          "Details": "Illness - Significant tooth decay from plaque on back teeth.",
+                          "Severity": Severity.HIGH,
+                          "Treatment": "Take pain killers every 10 hours, tooth extraction surgery ASAP."})
+
+        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13, 35), "SubjectID": 1, "SubjectName": "Jane",
+                          "ObjectID": 34, "ObjectName": "Dr.John", "Action": Action.RECEIVE_TREATMENT,
+                          "Details": "Medication taken - prescription pain killers.",
+                          "Severity": Severity.LOW, "Treatment": "NA"})
+        medical_log1.new({"DateTime": datetime(2025, 11, 18, 22, 00), "SubjectID": 1, "SubjectName": "Jane",
+                          "ObjectID": 12, "ObjectName": "Zookeeper.Billy", "Action": Action.RECEIVE_TREATMENT,
+                          "Details": "Medication taken - prescription pain killers.",
+                          "Severity": Severity.LOW, "Treatment": "NA"})
+        medical_log1.new({"DateTime": datetime(2025, 11, 19, 7, 00), "SubjectID": 1, "SubjectName": "Jane",
+                          "ObjectID": 12, "ObjectName": "Surgeon.Charlie", "Action": Action.RECEIVE_TREATMENT,
+                          "Details": "Extraction of teeth under anaesthesia.",
+                          "Severity": Severity.VERY_HIGH, "Treatment": "Eat soft foods only for 1 week."})
+        medical_log1.new({"DateTime": datetime(2025, 11, 26, 9, 00), "SubjectID": 1, "SubjectName": "Jane",
+                          "ObjectID": 12, "ObjectName": "Surgeon.Charlie", "Action": Action.RECEIVE_HEALTH_CHECK,
+                          "Details": "Post-op checkup",
+                          "Severity": Severity.VERY_LOW, "Treatment": "NA"})
+        medical_log1.new({"DateTime": datetime(2025, 11, 26, 9, 30), "SubjectID": 1, "SubjectName": "Jane",
+                          "ObjectID": 34, "ObjectName": "Dr.John", "Action": Action.RECOVER,
+                          "Details": "Oral disease successfully treated.",
+                          "Severity": Severity.VERY_LOW,
+                          "Treatment": "Cease pain killers."})
+        return medical_log1
 
     def test_new(self, log1):
         assert len(log1.data) == 0
@@ -31,6 +69,8 @@ class TestLog:
         log1.new({"DateTime": datetime(2004, 11, 12, 13, 50),
                   "SubjectID": 1,
                   "SubjectName": "Jane",
+                  "ObjectID": 1,
+                  "ObjectName": "Jane",
                   "Action": Action.EAT,
                   "Details": "1x apple"})
 
@@ -40,6 +80,54 @@ class TestLog:
                 "\n[2004-11-12 13:50:00] Jane_1 eats (1x apple)."
                 "\n----------------------------------------------------------------------------------------------\n")
         assert len(log1.data) == 1
+
+    def test_medical_log(self, medical_log1):
+        assert (medical_log1.__str__() ==
+                "----------------------------------------------------------------------------------------------\n"
+                "JANE'S MEDICAL LOG:\n"
+                "\n"
+                "[2025-11-18 13:00:00] Jane_1 receives health check from John_34;\n"
+                " > Description: Standard checkup - measure weight, inspect teeth, listen to heart.\n"
+                " > Severity: Very Low\n"
+                " > Treatment: NA\n"
+                "log ref number: 0\n"
+                "\n"
+                "[2025-11-18 13:30:00] Jane_1 is diagnosed by Dr.John_34;\n"
+                " > Description: Illness - Significant tooth decay from plaque on back teeth.\n"
+                " > Severity: High\n"
+                " > Treatment: Take pain killers every 10 hours, tooth extraction surgery ASAP.\n"
+                "log ref number: 1\n"
+                "\n"
+                "[2025-11-18 13:35:00] Jane_1 receives treatment from Dr.John_34;\n"
+                " > Description: Medication taken - prescription pain killers.\n"
+                " > Severity: Low\n"
+                " > Treatment: NA\n"
+                "log ref number: 2\n"
+                "\n"
+                "[2025-11-18 22:00:00] Jane_1 receives treatment from Zookeeper.Billy_12;\n"
+                " > Description: Medication taken - prescription pain killers.\n"
+                " > Severity: Low\n"
+                " > Treatment: NA\n"
+                "log ref number: 3\n"
+                "\n"
+                "[2025-11-19 07:00:00] Jane_1 receives treatment from Surgeon.Charlie_12;\n"
+                " > Description: Extraction of teeth under anaesthesia.\n"
+                " > Severity: Very High\n"
+                " > Treatment: Eat soft foods only for 1 week.\n"
+                "log ref number: 4\n"
+                "\n"
+                "[2025-11-26 09:00:00] Jane_1 receives health check from Surgeon.Charlie_12;\n"
+                " > Description: Post-op checkup\n"
+                " > Severity: Very Low\n"
+                " > Treatment: NA\n"
+                "log ref number: 5\n"
+                "\n"
+                "[2025-11-26 09:30:00] Jane_1 is declared recovered by Dr.John_34;\n"
+                " > Description: Oral disease successfully treated.\n"
+                " > Severity: Very Low\n"
+                " > Treatment: Cease pain killers.\n"
+                "log ref number: 6\n"
+                "----------------------------------------------------------------------------------------------\n")
 
 
 class TestSchedule:
