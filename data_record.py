@@ -22,6 +22,9 @@ class DataRecord(ABC):
         self.__data = pd.DataFrame({
             "SubjectID": pd.Series(dtype="int"),
             "SubjectName": pd.Series(dtype="string"),
+            "Action": pd.Series(dtype="object"),  # Action enumeration
+            "ObjectID": pd.Series(dtype="int"),  # receiver of the action (if applicable)
+            "ObjectName": pd.Series(dtype="string"),  # receiver of the action (if applicable)
             "Details": pd.Series(dtype="string")})
 
     def get_data(self) -> DataFrame:
@@ -54,6 +57,14 @@ class DataRecord(ABC):
         """
         Add a new row of information to the DataRecord.
         :param new_row: The new row of information to be added, represented as a dictionary.
+            The dictionary must contain:
+            - 'DateTime' (datetime): When the action was performed.
+            - 'SubjectID' (int): ID of the performer of the action.
+            - 'SubjectName' (str): Name of the performer of the action.
+            - 'ObjectID' (int): ID of the receiver of the action.
+            - 'ObjectName' (str): Name of the receiver of the action.
+            - 'Action' (Action): The action being performed.
+            - 'Details' (str): Further description of the action.
         :return: None
         """
         if not isinstance(new_row, dict):

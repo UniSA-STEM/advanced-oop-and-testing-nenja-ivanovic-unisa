@@ -1,7 +1,7 @@
 """
-File: log.py
-Description: Contains the Log class which is used to keep track of historical information about the actions of zoo
-entities over time. Log is a subclass of DataRecord.
+File: medical_log.py
+Description: Contains the MedicalLog class which is used to keep track of historical information about health status of
+animal objects over time. MedicalLog is a subclass of Log.
 Author: Nenja Ivanovic
 ID: 110462390
 Username: ivany005
@@ -12,11 +12,12 @@ from datetime import datetime
 import pandas as pd
 from pandas import DataFrame
 
-from action import Action
 from data_record import DataRecord
+from log import Log
+from severity import Severity
 
 
-class Log(DataRecord):
+class MedicalLog(Log):
     def __init__(self, log_name: str):
         """
         Create a new Log instance.
@@ -24,8 +25,10 @@ class Log(DataRecord):
         """
         super().__init__(log_name)
 
-        # create a dataframe to store action history (base columns with new columns added):
-        cols_to_add = DataFrame({"DateTime": pd.Series(dtype="object")})  # datetime object
+        # create a dataframe to store medical history (base columns with new columns added):
+        cols_to_add = DataFrame({
+            "Severity": pd.Series(dtype="object"),  # Severity enumeration
+            "Treatment": pd.Series(dtype="string")})
         self.data = pd.concat([self.data, cols_to_add])
 
     def new(self, new_row: dict):
@@ -41,6 +44,8 @@ class Log(DataRecord):
             - 'ObjectName' (str): Name of the receiver of the action.
             - 'Action' (Action): The action being performed.
             - 'Details' (str): Further description of the action.
+            - 'Severity' (Severity): The importance of the action or action outcome.
+            - 'Treatment' (str): Any medical action prescribed to be taken as a result of the current action.
         :return: None
         """
 
@@ -48,8 +53,8 @@ class Log(DataRecord):
                           datetime):  # the datetime class will internally handle formatting issues.
             raise TypeError("at_datetime must be a datetime or time object.")
 
-        if not isinstance(new_row.get("Action"), Action):
-            raise TypeError("The logged action must be from the Action enumeration.")
+        if not isinstance(new_row.get("Severity"), Severity):
+            raise TypeError("The logged record severity must be from the Severity enumeration.")
 
         super().new(new_row)
 
@@ -58,10 +63,10 @@ class Log(DataRecord):
         Display the contents of the log in a readable format.
         :return: A formatted string representing the log.
         """
-        output = super().__str__() + " LOG:"
+        output = DataRecord.__str__(self) + " LOG:"
 
         if len(self.data) == 0:
-            output += "\nNo data recorded."
+            output += "\nNo medical history recorded."
         else:
             self.data.sort_values(by=['DateTime'], ascending=True, inplace=True)
             # iterate through log records and add each as a formatted line:
@@ -70,9 +75,12 @@ class Log(DataRecord):
                 object_desc = f"{row.ObjectName}_{row.ObjectID}"
                 # if the subject of the scheduled action only relates to the performer, do not describe
                 # the ObjectName and ObjectID of the event:
-                object_desc = "" if object_desc == subject_desc else object_desc + " "
-                output += (f"\n[{row.DateTime}] {subject_desc} {row.Action.present_tense} "
-                           f"{object_desc}({row.Details}).")
+                object_desc = "" if object_desc == subject_desc else " " + object_desc
+                output += (f"\n\n[{row.DateTime}] {subject_desc} {row.Action.present_tense}{object_desc};"
+                           f"\n > Description: {row.Details}"
+                           f"\n > Severity: {row.Severity.description}"
+                           f"\n > Treatment: {row.Treatment}"
+                           f"\nlog ref number: {row.Index}")
                 # present_tense gets the descriptive verb associated with performing that Action (e.g. eats)
         output += f"\n----------------------------------------------------------------------------------------------\n"
         return output

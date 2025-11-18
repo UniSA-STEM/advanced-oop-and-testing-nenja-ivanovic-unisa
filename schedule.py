@@ -25,14 +25,10 @@ class Schedule(DataRecord):
         :param schedule_name: The name of the Schedule.
         """
         super().__init__(schedule_name)
-        cols_to_add = DataFrame({
-            "Time": pd.Series(dtype="object"),  # time object - no date required as schedule is daily.
-            "Action": pd.Series(dtype="object"),  # Action enumeration
-            "ObjectID": pd.Series(dtype="int"),  # receiver of the action (if applicable)
-            "ObjectName": pd.Series(dtype="string")  # receiver of the action (if applicable)
-        })
 
         # create a dataframe to store scheduled actions (base columns with new columns added):
+        cols_to_add = DataFrame(
+            {"Time": pd.Series(dtype="object")})  # time object - no date required as schedule is daily.
         self.data = pd.concat([self.data, cols_to_add])
 
     def new(self, new_row: dict):
@@ -40,14 +36,14 @@ class Schedule(DataRecord):
         Add a new row of information to the log.
 
         :param new_row: New row of information to be added, represented as a dictionary.
-                        The dictionary must contain:
-                        - 'Time' (time): When should be performed.
-                        - 'SubjectID' (int): ID of the performer of the action.
-                        - 'SubjectName' (str): Name of the performer of the action.
-                        - 'ObjectID' (int): ID of the receiver of the action.
-                        - 'ObjectName' (str): Name of the receiver of the action.
-                        - 'Action' (Action): The action that should be performed.
-                        - 'Details' (str): Further description of the action to be performed.
+            The dictionary must contain:
+            - 'Time' (time): When the action should be performed.
+            - 'SubjectID' (int): ID of the performer of the action.
+            - 'SubjectName' (str): Name of the performer of the action.
+            - 'Action' (Action): The action that should be performed.
+            - 'ObjectID' (int): ID of the receiver of the action.
+            - 'ObjectName' (str): Name of the receiver of the action.
+            - 'Details' (str): Further description of the action to be performed.
         :return: None
         """
 
@@ -70,6 +66,7 @@ class Schedule(DataRecord):
         if len(self.data) == 0:
             output += "\nNo events scheduled."
         else:
+            self.data.sort_values(by=['Time'], ascending=True, inplace=True)
             event_times = self.data['Time'].unique()
             event_number = 1
 

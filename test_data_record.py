@@ -32,7 +32,7 @@ class TestLog:
                   "SubjectID": 1,
                   "SubjectName": "Jane",
                   "Action": Action.EAT,
-                  "Details": "(1x apple)"})
+                  "Details": "1x apple"})
 
         assert (log1.__str__() ==
                 "----------------------------------------------------------------------------------------------"

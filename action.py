@@ -1,7 +1,6 @@
 """
 File: action.py
 Description: Contains the enumeration class for all actions that can be logged.
-have a name and age.
 Author: Nenja Ivanovic
 ID: 110462390
 Username: ivany005
@@ -19,13 +18,15 @@ class Action(Enum):
     AGE = ("age", "ages")
     SPEAK = ("speak", "says")
     CLEAN = ("clean", "cleans")
-    RECEIVE_CLEANING = ("receive cleaning", "is cleaned")
+    RECEIVE_CLEANING = ("receive cleaning", "is cleaned by")
     TREAT = ("treat", "treats")
-    RECEIVE_TREATMENT = ("receive treatment", "receives treatment")
+    RECEIVE_TREATMENT = ("receive treatment", "receives treatment from")
     CHECK_HEALTH = ("perform health checkup on", "checks health of")
-    RECEIVE_HEALTH_CHECK = ("receive health check", "receives health check")
+    RECEIVE_HEALTH_CHECK = ("receive health check", "receives health check from")
     DIAGNOSE = ("diagnose", "diagnoses")
-    RECEIVE_DIAGNOSIS = ("receive diagnosis", "is diagnosed with health condition")
+    RECEIVE_DIAGNOSIS = ("receive diagnosis", "is diagnosed by")
+    RECOVER = ("recover", "is declared recovered by")
+    DECLARE_RECOVERY = ("declare recovery of", "declares recovery of")
 
     def __init__(self, imperative: str, present_tense: str):
         self.__imperative = imperative
