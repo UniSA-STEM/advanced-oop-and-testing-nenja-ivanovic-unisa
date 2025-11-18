@@ -19,7 +19,10 @@ class DataRecord(ABC):
         :param record_name: The name of the DataRecord.
         """
         self.__name = record_name
-        self.__data = pd.DataFrame()
+        self.__data = pd.DataFrame({
+            "SubjectID": pd.Series(dtype="int"),
+            "SubjectName": pd.Series(dtype="string"),
+            "Details": pd.Series(dtype="string")})
 
     def get_data(self) -> DataFrame:
         """Return the data stored in the DataRecord instance.

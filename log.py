@@ -1,7 +1,7 @@
 """
 File: log.py
 Description: Contains the Log class which is used to keep track of historical information about the actions of zoo
-entities over time.
+entities over time. Log is a subclass of DataRecord.
 Author: Nenja Ivanovic
 ID: 110462390
 Username: ivany005
@@ -23,15 +23,12 @@ class Log(DataRecord):
         :param log_name: The name of the log.
         """
         super().__init__(log_name)
-
-        # create a dataframe to store action history
-        self.data = DataFrame({
+        cols_to_add = DataFrame({
             "DateTime": pd.Series(dtype="object"),  # datetime object
-            "Id": pd.Series(dtype="int"),
-            "Name": pd.Series(dtype="string"),
-            "Action": pd.Series(dtype="object"),  # Action enumeration
-            "Details": pd.Series(dtype="string")
+            "Action": pd.Series(dtype="object")  # Action enumeration
         })
+        # create a dataframe to store action history (base columns with new columns added):
+        self.data = pd.concat([self.data, cols_to_add])
 
     def new(self, new_row: dict):
         """
@@ -40,8 +37,8 @@ class Log(DataRecord):
         :param new_row: New row of information to be added, represented as a dictionary.
                         The dictionary must contain:
                         - 'DateTime' (datetime): When the action was performed.
-                        - 'Id' (int): ID of the object performing the action.
-                        - 'Name' (str): Name of the object performing the action.
+                        - 'SubjectID' (int): ID of the performer of the action.
+                        - 'SubjectName' (str): Name of the performer of the action.
                         - 'Action' (Action): The action being performed.
                         - 'Details' (str): Further description of the action.
         :return: None
@@ -68,7 +65,8 @@ class Log(DataRecord):
         else:
             # iterate through log records and add each as a formatted line:
             for row in self.data.itertuples():
-                output += (f"\n[{row.DateTime}] {row.Name}_{row.Id} "
+                output += (f"\n[{row.DateTime}] {row.SubjectName}_{row.SubjectID} "
                            f"{row.Action.present_tense} {row.Details}.")
+                # present_tense gets the descriptive verb associated with performing that Action (e.g. eats)
         output += f"\n----------------------------------------------------------------------------------------------\n"
         return output

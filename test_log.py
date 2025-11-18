@@ -28,8 +28,8 @@ class TestLog:
                 "\n----------------------------------------------------------------------------------------------\n")
 
         log1.new({"DateTime": datetime(2004, 11, 12, 13, 50),
-                  "Id": 1,
-                  "Name": "Jane",
+                  "SubjectID": 1,
+                  "SubjectName": "Jane",
                   "Action": Action.EAT,
                   "Details": "(1x apple)"})
 

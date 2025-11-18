@@ -12,9 +12,20 @@ from enum import Enum
 
 class Action(Enum):
     EAT = ("eat", "eats")
+    FEED = ("feed", "feeds")
+    DRINK = ("drink", "drinks")
+    GIVE_WATER = ("give water to", "gives water to")
     SLEEP = ("sleep", "sleeps")
     AGE = ("age", "ages")
     SPEAK = ("speak", "says")
+    CLEAN = ("clean", "cleans")
+    RECEIVE_CLEANING = ("receive cleaning", "is cleaned")
+    TREAT = ("treat", "treats")
+    RECEIVE_TREATMENT = ("receive treatment", "receives treatment")
+    CHECK_HEALTH = ("perform health checkup on", "checks health of")
+    RECEIVE_HEALTH_CHECK = ("receive health check", "receives health check")
+    DIAGNOSE = ("diagnose", "diagnoses")
+    RECEIVE_DIAGNOSIS = ("receive diagnosis", "is diagnosed with health condition")
 
     def __init__(self, imperative: str, present_tense: str):
         self.__imperative = imperative
