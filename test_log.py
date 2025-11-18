@@ -20,18 +20,22 @@ class TestLog:
         return Log("Jane's Activity")
 
     def test_new(self, log1):
-        assert len(log1.log) == 0
+        assert len(log1.data) == 0
         assert (log1.__str__() ==
                 "----------------------------------------------------------------------------------------------"
                 "\nJANE'S ACTIVITY LOG:"
+                "\nNo data recorded."
                 "\n----------------------------------------------------------------------------------------------\n")
 
-        log1.new(1, "Jane", Action.EAT, "(1x apple)",
-                 datetime(2004, 11, 12, 13, 50, 00))  # datetime provided
+        log1.new({"DateTime": datetime(2004, 11, 12, 13, 50),
+                  "Id": 1,
+                  "Name": "Jane",
+                  "Action": Action.EAT,
+                  "Details": "(1x apple)"})
+
         assert (log1.__str__() ==
                 "----------------------------------------------------------------------------------------------"
                 "\nJANE'S ACTIVITY LOG:"
                 "\n[2004-11-12 13:50:00] Jane_1 eats (1x apple)."
                 "\n----------------------------------------------------------------------------------------------\n")
-        log1.new(1, "Jane", Action.EAT, "(3x banana)")  # no datetime provided
-        assert len(log1.log) == 2
+        assert len(log1.data) == 1

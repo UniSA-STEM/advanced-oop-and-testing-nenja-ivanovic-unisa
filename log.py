@@ -1,6 +1,7 @@
 """
 File: log.py
-Description: Contains the Log class which is used to keep track of information about other zoo classes over time.
+Description: Contains the Log class which is used to keep track of historical information about the actions of zoo
+entities over time.
 Author: Nenja Ivanovic
 ID: 110462390
 Username: ivany005
@@ -9,63 +10,65 @@ This is my own work as defined by the University's Academic Integrity Policy.
 from datetime import datetime
 
 import pandas as pd
-from pandas.core.interchange.dataframe_protocol import DataFrame
+from pandas import DataFrame
 
 from action import Action
+from data_record import DataRecord
 
 
-class Log:
-    def __init__(self, log_name):
-        """ Create a new Log instance. """
-        self.__name = log_name
-        # create a dataframe to store activities
-        self.__log = pd.DataFrame({
-            "Time": pd.Series(dtype="object"),  # datetime object
+class Log(DataRecord):
+    def __init__(self, log_name: str):
+        """
+        Create a new Log instance.
+        :param log_name: The name of the log.
+        """
+        super().__init__(log_name)
+
+        # create a dataframe to store action history
+        self.data = DataFrame({
+            "DateTime": pd.Series(dtype="object"),  # datetime object
             "Id": pd.Series(dtype="int"),
             "Name": pd.Series(dtype="string"),
             "Action": pd.Series(dtype="object"),  # Action enumeration
             "Details": pd.Series(dtype="string")
         })
 
-    def get_log(self) -> DataFrame:
-        """ Returns the log dataframe."""
-        return self.__log
-
-    log = property(get_log)
-
-    def new(self, actor_id: int, actor_name: str, action: Action, details: str, at_datetime: datetime = datetime.now()):
+    def new(self, new_row: dict):
         """
-        Add information about an action that was performed by an object to the log as a new row.
-        :param actor_id: The id of the object performing the action.
-        :param actor_name: The name of the object performing the action.
-        :param action: The action being performed (from the Action enum).
-        :param details: A further description of details relating to the action.
-        :param at_datetime: The date and time at which the action was performed (default is when the method is called).
+        Add a new row of information to the log.
+
+        :param new_row: New row of information to be added, represented as a dictionary.
+                        The dictionary must contain:
+                        - 'DateTime' (datetime): When the action was performed.
+                        - 'Id' (int): ID of the object performing the action.
+                        - 'Name' (str): Name of the object performing the action.
+                        - 'Action' (Action): The action being performed.
+                        - 'Details' (str): Further description of the action.
         :return: None
         """
 
-        if not isinstance(at_datetime, datetime):  # the datetime class will internally handle formatting issues.
-            raise TypeError("at_datetime must be a datetime object.")
+        if not isinstance(new_row.get("DateTime"),
+                          datetime):  # the datetime class will internally handle formatting issues.
+            raise TypeError("at_datetime must be a datetime or time object.")
 
-        if not isinstance(action, Action):
+        if not isinstance(new_row.get("Action"), Action):
             raise TypeError("The logged action must be from the Action enumeration.")
 
-        # add new row to log:
-        self.__log.loc[len(self.__log)] = {"Time": at_datetime, "Id": actor_id, "Name": actor_name, "Action": action,
-                                           "Details": details,
-                                           }
+        super().new(new_row)
 
     def __str__(self) -> str:
         """
         Display the contents of the log in a readable format.
         :return: A formatted string representing the log.
         """
-        output = f"----------------------------------------------------------------------------------------------" \
-                 f"\n{self.__name.upper()} LOG:"
+        output = super().__str__() + " LOG:"
 
-        # iterate through log records and add each as a formatted line:
-        for row in self.log.itertuples():
-            output += (f"\n[{row.Time}] {row.Name}_{row.Id} "
-                       f"{row.Action.present_tense} {row.Details}.")
+        if len(self.data) == 0:
+            output += "\nNo data recorded."
+        else:
+            # iterate through log records and add each as a formatted line:
+            for row in self.data.itertuples():
+                output += (f"\n[{row.DateTime}] {row.Name}_{row.Id} "
+                           f"{row.Action.present_tense} {row.Details}.")
         output += f"\n----------------------------------------------------------------------------------------------\n"
         return output

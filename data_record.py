@@ -19,9 +19,9 @@ class DataRecord(ABC):
         :param record_name: The name of the DataRecord.
         """
         self.__name = record_name
-        self.__data = pd.DataFrame
+        self.__data = pd.DataFrame()
 
-    def get_data(self) -> type[DataFrame]:
+    def get_data(self) -> DataFrame:
         """Return the data stored in the DataRecord instance.
         :return DataFrame"""
         return self.__data
@@ -34,8 +34,9 @@ class DataRecord(ABC):
         """
         if not isinstance(new_data, DataFrame):
             raise TypeError("The data attribute of a DataRecord object can only be set to a pandas DataFrame.")
-        if self.__data.columns != new_data.columns:
-            raise ValueError("The new data must match the columns of the existing data.")
+        # check that the new dataframe contains at minimum all columns of the existing dataframe it is replacing:
+        if not (all(cols in new_data.columns.values for cols in self.data.columns.values)):
+            raise ValueError("The new data must contain the columns of the existing data.")
         self.__data = new_data
 
     def get_name(self) -> str:
@@ -45,25 +46,26 @@ class DataRecord(ABC):
     data = property(get_data, set_data)
     name = property(get_name)
 
+    @abstractmethod
     def new(self, new_row: dict):
         """
         Add a new row of information to the DataRecord.
         :param new_row: The new row of information to be added, represented as a dictionary.
         :return: None
         """
-        if not isinstance(new_row.keys(), dict):
+        if not isinstance(new_row, dict):
             raise TypeError("The new row of data must be provided as a Dictionary object.")
-        if not self.__data.columns == new_row.keys():
+        if not set(self.data.columns.values) == set(new_row.keys()):
             raise ValueError(f"The dictionary keys must match the existing columns of the DataRecord data attribute. "
-                             f"\nThese are: {self.data.columns}")
+                             f"\nExpected: {set(self.data.columns.values)}"
+                             f"\nGot: {set(new_row.keys())}")
         next_empty_row = len(self.data)
-        self.data[next_empty_row] = new_row
+        self.data.loc[next_empty_row] = new_row
 
     @abstractmethod  # every concrete subclass must have a special string method for displaying records.
     def __str__(self) -> str:
         """Return a formatted string representation of the DataRecord's contents."""
-        output = (
-            f"----------------------------------------------------------------------------------------------------"
-            f"\n{self.name.upper()}")
+        output = (f"----------------------------------------------------------------------------------------------"
+                  f"\n{self.name.upper()}")
         return output
         # the abstract __string__() method returns the start of every subclass string output which can be added to.
