@@ -49,8 +49,12 @@ class DataRecord(ABC):
         """Return the name (string) of the DataRecord."""
         return self.__name
 
+    def set_name(self, name: str) -> str:
+        """Set the name of the DataRecord to a new string value."""
+        self.__name = name
+
     data = property(get_data, set_data)
-    name = property(get_name)
+    name = property(get_name, set_name())
 
     @abstractmethod
     def new(self, new_row: dict):
