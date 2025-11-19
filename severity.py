@@ -31,3 +31,21 @@ class Severity(Enum):
 
     description = property(get_description)
     level = property(get_level)
+
+    def increase_decrease(self, num_levels: int):
+        """
+        Return a Severity a certain number of levels above or below own level.
+        :param num_levels: The number of levels to go up.
+        :return: Severity
+        """
+        current_level = self.level
+
+        lookup_level = current_level + int(num_levels)  # convert to int if float was provided.
+        if num_levels < 0:  # level is decreasing
+            min_possible_level = min([severity.level for severity in Severity])
+            lookup_level = max(lookup_level, min_possible_level)  # ensure level to look up is not lower than min
+        if num_levels < 0:  # level is decreasing
+            max_possible_level = max([severity.level for severity in Severity])
+            lookup_level = min(lookup_level, max_possible_level)  # ensure level to look up is not higher than max
+
+        return Severity(lookup_level)
