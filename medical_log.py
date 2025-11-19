@@ -38,9 +38,9 @@ class MedicalLog(Log):
         :param new_row: New row of information to be added, represented as a dictionary.
             The dictionary must contain:
             - 'DateTime' (datetime): When the action was performed.
-            - 'SubjectID' (int): ID of the performer of the action.
+            - 'SubjectID' (str): ID of the performer of the action.
             - 'SubjectName' (str): Name of the performer of the action.
-            - 'ObjectID' (int): ID of the receiver of the action.
+            - 'ObjectID' (str): ID of the receiver of the action.
             - 'ObjectName' (str): Name of the receiver of the action.
             - 'Action' (Action): The action being performed.
             - 'Details' (str): Further description of the action.

@@ -25,34 +25,34 @@ class TestLog:
     @pytest.fixture
     def medical_log1(self) -> MedicalLog:
         medical_log1 = MedicalLog("Jane's Medical")
-        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13), "SubjectID": 1, "SubjectName": "Jane",
-                          "ObjectID": 34, "ObjectName": "John", "Action": Action.RECEIVE_HEALTH_CHECK,
+        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13), "SubjectID": "1", "SubjectName": "Jane",
+                          "ObjectID": "34", "ObjectName": "John", "Action": Action.RECEIVE_HEALTH_CHECK,
                           "Details": "Standard checkup - measure weight, inspect teeth, listen to heart.",
                           "Severity": Severity.VERY_LOW, "Treatment": "NA"})
-        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13, 30), "SubjectID": 1, "SubjectName": "Jane",
-                          "ObjectID": 34, "ObjectName": "Dr.John", "Action": Action.RECEIVE_DIAGNOSIS,
+        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13, 30), "SubjectID": "1", "SubjectName": "Jane",
+                          "ObjectID": "34", "ObjectName": "Dr.John", "Action": Action.RECEIVE_DIAGNOSIS,
                           "Details": "Illness - Significant tooth decay from plaque on back teeth.",
                           "Severity": Severity.HIGH,
                           "Treatment": "Take pain killers every 10 hours, tooth extraction surgery ASAP."})
 
-        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13, 35), "SubjectID": 1, "SubjectName": "Jane",
-                          "ObjectID": 34, "ObjectName": "Dr.John", "Action": Action.RECEIVE_TREATMENT,
+        medical_log1.new({"DateTime": datetime(2025, 11, 18, 13, 35), "SubjectID": "1", "SubjectName": "Jane",
+                          "ObjectID": "34", "ObjectName": "Dr.John", "Action": Action.RECEIVE_TREATMENT,
                           "Details": "Medication taken - prescription pain killers.",
                           "Severity": Severity.LOW, "Treatment": "NA"})
-        medical_log1.new({"DateTime": datetime(2025, 11, 18, 22, 00), "SubjectID": 1, "SubjectName": "Jane",
-                          "ObjectID": 12, "ObjectName": "Zookeeper.Billy", "Action": Action.RECEIVE_TREATMENT,
+        medical_log1.new({"DateTime": datetime(2025, 11, 18, 22, 00), "SubjectID": "1", "SubjectName": "Jane",
+                          "ObjectID": "12", "ObjectName": "Zookeeper.Billy", "Action": Action.RECEIVE_TREATMENT,
                           "Details": "Medication taken - prescription pain killers.",
                           "Severity": Severity.LOW, "Treatment": "NA"})
-        medical_log1.new({"DateTime": datetime(2025, 11, 19, 7, 00), "SubjectID": 1, "SubjectName": "Jane",
-                          "ObjectID": 12, "ObjectName": "Surgeon.Charlie", "Action": Action.RECEIVE_TREATMENT,
+        medical_log1.new({"DateTime": datetime(2025, 11, 19, 7, 00), "SubjectID": "1", "SubjectName": "Jane",
+                          "ObjectID": "12", "ObjectName": "Surgeon.Charlie", "Action": Action.RECEIVE_TREATMENT,
                           "Details": "Extraction of teeth under anaesthesia.",
                           "Severity": Severity.VERY_HIGH, "Treatment": "Eat soft foods only for 1 week."})
-        medical_log1.new({"DateTime": datetime(2025, 11, 26, 9, 00), "SubjectID": 1, "SubjectName": "Jane",
-                          "ObjectID": 12, "ObjectName": "Surgeon.Charlie", "Action": Action.RECEIVE_HEALTH_CHECK,
+        medical_log1.new({"DateTime": datetime(2025, 11, 26, 9, 00), "SubjectID": "1", "SubjectName": "Jane",
+                          "ObjectID": "12", "ObjectName": "Surgeon.Charlie", "Action": Action.RECEIVE_HEALTH_CHECK,
                           "Details": "Post-op checkup",
                           "Severity": Severity.VERY_LOW, "Treatment": "NA"})
-        medical_log1.new({"DateTime": datetime(2025, 11, 26, 9, 30), "SubjectID": 1, "SubjectName": "Jane",
-                          "ObjectID": 34, "ObjectName": "Dr.John", "Action": Action.RECOVER,
+        medical_log1.new({"DateTime": datetime(2025, 11, 26, 9, 30), "SubjectID": "1", "SubjectName": "Jane",
+                          "ObjectID": "34", "ObjectName": "Dr.John", "Action": Action.RECOVER,
                           "Details": "Oral disease successfully treated.",
                           "Severity": Severity.VERY_LOW,
                           "Treatment": "Cease pain killers."})
@@ -67,9 +67,9 @@ class TestLog:
                 "\n----------------------------------------------------------------------------------------------\n")
 
         log1.new({"DateTime": datetime(2004, 11, 12, 13, 50),
-                  "SubjectID": 1,
+                  "SubjectID": "1",
                   "SubjectName": "Jane",
-                  "ObjectID": 1,
+                  "ObjectID": "1",
                   "ObjectName": "Jane",
                   "Action": Action.EAT,
                   "Details": "1x apple"})
@@ -138,29 +138,33 @@ class TestSchedule:
     @pytest.fixture
     def schedule2(self) -> Schedule:
         schedule2 = Schedule("Zookeepers' Daily")
-        schedule2.new({"Time": time(9, 30), "SubjectID": 34, "SubjectName": "John", "ObjectID": 1,
+        schedule2.new({"Time": time(9, 30), "SubjectID": "34", "SubjectName": "John", "ObjectID": "1",
                        "ObjectName": "Jane",
                        "Action": Action.FEED, "Details": "1x apple"})
-        schedule2.new({"Time": time(9, 30), "SubjectID": 5, "SubjectName": "Mary", "ObjectID": 1, "ObjectName": "Jane",
-                       "Action": Action.GIVE_WATER, "Details": "fill water tray 500mLs"})
-        schedule2.new({"Time": time(9, 30), "SubjectID": 34, "SubjectName": "John", "ObjectID": 1, "ObjectName": "Jane",
-                       "Action": Action.CHECK_HEALTH, "Details": "review burn on stomach"})
+        schedule2.new(
+            {"Time": time(9, 30), "SubjectID": "5", "SubjectName": "Mary", "ObjectID": "1", "ObjectName": "Jane",
+             "Action": Action.GIVE_WATER, "Details": "fill water tray 500mLs"})
+        schedule2.new(
+            {"Time": time(9, 30), "SubjectID": "34", "SubjectName": "John", "ObjectID": "1", "ObjectName": "Jane",
+             "Action": Action.CHECK_HEALTH, "Details": "review burn on stomach"})
         return schedule2
 
     @pytest.fixture
     def schedule3(self, schedule2) -> Schedule:
         schedule3 = schedule2
-        schedule3.new({"Time": time(14, 00), "SubjectID": 5, "SubjectName": "Mary", "ObjectID": 1, "ObjectName": "Jane",
-                       "Action": Action.FEED, "Details": "3 cups milk"})
-        schedule3.new({"Time": time(14, 30), "SubjectID": 5, "SubjectName": "Mary", "ObjectID": 3, "ObjectName":
+        schedule3.new(
+            {"Time": time(14, 00), "SubjectID": "5", "SubjectName": "Mary", "ObjectID": "1", "ObjectName": "Jane",
+             "Action": Action.FEED, "Details": "3 cups milk"})
+        schedule3.new({"Time": time(14, 30), "SubjectID": "5", "SubjectName": "Mary", "ObjectID": "3", "ObjectName":
             "Blue Lagoon Enclosure", "Action": Action.CLEAN, "Details": "sweep only"})
-        schedule3.new({"Time": time(9, 30), "SubjectID": 34, "SubjectName": "John", "ObjectID": 1, "ObjectName": "Jane",
-                       "Action": Action.TREAT, "Details": "apply ointment"})
+        schedule3.new(
+            {"Time": time(9, 30), "SubjectID": "34", "SubjectName": "John", "ObjectID": "1", "ObjectName": "Jane",
+             "Action": Action.TREAT, "Details": "apply ointment"})
         return schedule3
 
     def test_subject_only_record(self, schedule1):
         # subject and object of the action are the same:
-        schedule1.new({"Time": time(9, 30), "SubjectID": 1, "SubjectName": "Jane", "ObjectID": 1,
+        schedule1.new({"Time": time(9, 30), "SubjectID": "1", "SubjectName": "Jane", "ObjectID": "1",
                        "ObjectName": "Jane", "Action": Action.EAT, "Details": "1x apple"})
         assert (schedule1.__str__() ==
                 "----------------------------------------------------------------------------------------------"
@@ -169,7 +173,7 @@ class TestSchedule:
                 "\n - Jane_1 to eat (1x apple)"
                 "\n----------------------------------------------------------------------------------------------\n")
 
-        schedule1.new({"Time": time(9, 30), "SubjectID": 1, "SubjectName": "Jane", "ObjectID": 1,
+        schedule1.new({"Time": time(9, 30), "SubjectID": "1", "SubjectName": "Jane", "ObjectID": "1",
                        "ObjectName": "Jane", "Action": Action.DRINK, "Details": "3 cups milk"})
         assert (schedule1.__str__() ==
                 "----------------------------------------------------------------------------------------------"

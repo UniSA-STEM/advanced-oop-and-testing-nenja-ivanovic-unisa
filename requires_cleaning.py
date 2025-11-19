@@ -33,8 +33,8 @@ class RequiresCleaning(ABC):
         """Return a string representing the object's name."""
 
     @abstractmethod
-    def get_id(self) -> int:
-        """Return an integer representing the object's unique identifier."""
+    def get_id(self) -> str:
+        """Return a string representing the object's unique identifier."""
 
     @abstractmethod
     def get_log(self) -> Log:
@@ -61,11 +61,11 @@ class RequiresCleaning(ABC):
                             "Action": Action.BECOME_DIRTIER,
                             "Details": f"cleanliness is now {self.cleanliness.description}"})
 
-    def receive_cleaning(self, object_id: int, object_name: str, num_levels: int = 1, ):
+    def receive_cleaning(self, object_id: str, object_name: str, num_levels: int = 1, ):
         """
         Increase cleanliness by a number of severity levels if possible. Log event.
         :param object_name: The name of the object that the RequiresCleaning object is being cleaned by.
-        :param object_id: The name of the object that the RequiresCleaning object is being cleaned by.
+        :param object_id: The id of the object that the RequiresCleaning object is being cleaned by.
         :param num_levels: The number of levels cleanliness is increasing (default = 1).
         :return: None
         """

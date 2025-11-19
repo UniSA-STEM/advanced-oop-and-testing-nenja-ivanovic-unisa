@@ -20,10 +20,10 @@ class DataRecord(ABC):
         """
         self.__name = record_name
         self.__data = pd.DataFrame({
-            "SubjectID": pd.Series(dtype="int"),
+            "SubjectID": pd.Series(dtype="string"),
             "SubjectName": pd.Series(dtype="string"),
             "Action": pd.Series(dtype="object"),  # Action enumeration
-            "ObjectID": pd.Series(dtype="int"),  # receiver of the action (if applicable)
+            "ObjectID": pd.Series(dtype="string"),  # receiver of the action (if applicable)
             "ObjectName": pd.Series(dtype="string"),  # receiver of the action (if applicable)
             "Details": pd.Series(dtype="string")})
 
@@ -49,12 +49,12 @@ class DataRecord(ABC):
         """Return the name (string) of the DataRecord."""
         return self.__name
 
-    def set_name(self, name: str) -> str:
+    def set_name(self, name: str):
         """Set the name of the DataRecord to a new string value."""
         self.__name = name
 
     data = property(get_data, set_data)
-    name = property(get_name, set_name())
+    name = property(get_name, set_name)
 
     @abstractmethod
     def new(self, new_row: dict):
@@ -63,9 +63,9 @@ class DataRecord(ABC):
         :param new_row: The new row of information to be added, represented as a dictionary.
             The dictionary must contain:
             - 'DateTime' (datetime): When the action was performed.
-            - 'SubjectID' (int): ID of the performer of the action.
+            - 'SubjectID' (str): ID of the performer of the action.
             - 'SubjectName' (str): Name of the performer of the action.
-            - 'ObjectID' (int): ID of the receiver of the action.
+            - 'ObjectID' (str): ID of the receiver of the action.
             - 'ObjectName' (str): Name of the receiver of the action.
             - 'Action' (Action): The action being performed.
             - 'Details' (str): Further description of the action.

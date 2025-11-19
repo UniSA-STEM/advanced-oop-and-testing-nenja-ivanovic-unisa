@@ -15,7 +15,7 @@ from log import Log
 
 
 class Animal(ABC):
-    _next_id = 1  # unique identifier of the animal which is incremented by one each time a animal is created.
+    _next_id = 1  # unique identifier of the animal which is incremented by one each time an animal is created.
 
     def __init__(self, name: str, species: str, age: int = 0, sound: str = None):
         """
@@ -33,11 +33,15 @@ class Animal(ABC):
             raise ValueError("Animal age must be positive.")
         self.__age = age
 
-        self.__id = Animal._next_id
+        self.__id = "A" + str(Animal._next_id)  # A to represent 'Animal'
         Animal._next_id += 1
 
         # create a new Log object to store records of activities
         self.__log = Log(f"{self.name} Activity")
+
+        # create a new schedule to store diet
+
+        # create a new schedule to store
 
     def get_name(self) -> str:
         """Return a string representing the animal's name."""
@@ -47,8 +51,8 @@ class Animal(ABC):
         """Return an integer representing the animal's age in years."""
         return self.__age
 
-    def get_id(self) -> int:
-        """Return an integer representing the animal's unique identifier."""
+    def get_id(self) -> str:
+        """Return a string representing the animal's unique identifier."""
         return self.__id
 
     def get_log(self) -> Log:

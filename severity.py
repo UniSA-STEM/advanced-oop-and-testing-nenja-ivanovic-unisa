@@ -49,4 +49,3 @@ class Severity(Enum):
             lookup_level = min(lookup_level, max_possible_level)  # ensure level to look up is not higher than max
 
         return Severity(lookup_level)
-    
