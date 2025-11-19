@@ -157,7 +157,7 @@ class HasHealth(ABC):
         """
         self.__under_treatment = False
         self.treatments.remove()  # remove all treatments
-        
+
         return self.medical_log.new({"DateTime": at_datetime,
                                      "SubjectID": self.get_id(),
                                      "SubjectName": self.get_name(),

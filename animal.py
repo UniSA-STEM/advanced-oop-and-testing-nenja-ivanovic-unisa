@@ -11,10 +11,13 @@ from abc import ABC
 from datetime import datetime  # automatically handles formatting issues with dates and times.
 
 from action import Action
+from has_health import HasHealth
 from log import Log
+from requires_cleaning import RequiresCleaning
+from schedule import Schedule
 
 
-class Animal(ABC):
+class Animal(ABC, RequiresCleaning, HasHealth):
     _next_id = 1  # unique identifier of the animal which is incremented by one each time an animal is created.
 
     def __init__(self, name: str, species: str, age: int = 0, sound: str = None):
@@ -36,12 +39,8 @@ class Animal(ABC):
         self.__id = "A" + str(Animal._next_id)  # A to represent 'Animal'
         Animal._next_id += 1
 
-        # create a new Log object to store records of activities
-        self.__log = Log(f"{self.name} Activity")
-
-        # create a new schedule to store diet
-
-        # create a new schedule to store
+        self.__log = Log(f"{self.name} General Activity")  # new Log to store records of general activities.
+        self.__diet = Schedule(f"{self.name} Dietary")  # create a new schedule to store daily feeding plan.
 
     def get_name(self) -> str:
         """Return a string representing the animal's name."""
@@ -59,10 +58,15 @@ class Animal(ABC):
         """ Returns the log of the animal's activities."""
         return self.__log
 
+    def get_diet(self) -> Schedule:
+        """ Returns the animal's daily feeding schedule."""
+        return self.__diet
+
     name = property(get_name)
     age = property(get_age)
     id = property(get_id)
     log = property(get_log)
+    diet = property(get_diet)
 
     def become_older(self, years: float = 1, at_datetime: datetime = datetime.now()):
         """
@@ -77,8 +81,13 @@ class Animal(ABC):
             raise ValueError("The number of years to age must be greater than zero.")
 
         self.__age += years
-        self.log.new(self.id, self.name, Action.AGE, f"(by {years} years to become {self.__age} years old)",
-                     at_datetime)
+        self.log.new({"DateTime": at_datetime,
+                      "SubjectID": self.__id,
+                      "SubjectName": self.__name,
+                      "ObjectID": self.__id,
+                      "ObjectName": self.__name,
+                      "Action": Action.AGE,
+                      "Details": f"by {years} years to become {self.__age} years old"})
 
     def sleep(self, at_datetime: datetime = datetime.now()):
         """
@@ -86,7 +95,13 @@ class Animal(ABC):
         :param at_datetime: The date and time at which the animal slept (default is when the method is called).
         :return: None
         """
-        self.log.new(self.id, self.name, Action.SLEEP, f"(Zzz...)", at_datetime)
+        self.log.new({"DateTime": at_datetime,
+                      "SubjectID": self.__id,
+                      "SubjectName": self.__name,
+                      "ObjectID": self.__id,
+                      "ObjectName": self.__name,
+                      "Action": Action.SLEEP,
+                      "Details": f"Zzz..."})
 
     def make_sound(self, at_datetime: datetime = datetime.now()):
         """
@@ -94,7 +109,13 @@ class Animal(ABC):
         :param at_datetime: The date and time at which the animal made a sound (default is when the method is called).
         :return: None
         """
-        self.log.new(self.id, self.name, Action.SPEAK, f"('{self.__sound}')", at_datetime)
+        self.log.new({"DateTime": at_datetime,
+                      "SubjectID": self.__id,
+                      "SubjectName": self.__name,
+                      "ObjectID": self.__id,
+                      "ObjectName": self.__name,
+                      "Action": Action.SPEAK,
+                      "Details": f"'{self.__sound}'"})
 
     def eat(self, food: str, quantity: str, at_datetime=datetime.now()):
         """
@@ -104,5 +125,26 @@ class Animal(ABC):
         :param at_datetime: The date and time at which the animal ate food (default is when the method is called).
         :return: None
         """
+        self.log.new({"DateTime": at_datetime,
+                      "SubjectID": self.__id,
+                      "SubjectName": self.__name,
+                      "ObjectID": self.__id,
+                      "ObjectName": self.__name,
+                      "Action": Action.EAT,
+                      "Details": f"{quantity} {food}"})
 
-        self.log.new(self.id, self.name, Action.EAT, f"({quantity} {food})", at_datetime)
+    def drink(self, liquid: str, quantity: str, at_datetime=datetime.now()):
+        """
+        Log that the animal drank a liquid.
+        :param liquid: Name of the liquid drank.
+        :param quantity: Quantity of the liquid drank.
+        :param at_datetime: The date and time at which the animal drank (default is when the method is called).
+        :return: None
+        """
+        self.log.new({"DateTime": at_datetime,
+                      "SubjectID": self.__id,
+                      "SubjectName": self.__name,
+                      "ObjectID": self.__id,
+                      "ObjectName": self.__name,
+                      "Action": Action.DRINK,
+                      "Details": f"{quantity} {liquid}"})
