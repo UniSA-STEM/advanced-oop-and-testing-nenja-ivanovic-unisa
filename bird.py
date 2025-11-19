@@ -7,11 +7,9 @@ ID: 110462390
 Username: ivany005
 This is my own work as defined by the University's Academic Integrity Policy.
 """
-from datetime import datetime, time
 
 from action import Action
 from animal import Animal
-from severity import Severity
 
 
 class Bird(Animal):
@@ -57,49 +55,3 @@ class Bird(Animal):
                       "ObjectName": self.name,
                       "Action": Action.FLY,
                       "Details": f"{details}"})
-
-
-bird1 = Bird("Pinky", "Emperor Penguin", 76, False, 2)
-print(bird1)
-bird1.fly(datetime(2004, 11, 12, 6))
-bird1.fly(datetime(2004, 11, 12, 6, 20))
-bird1.fly(datetime(2004, 11, 12, 6, 45))
-bird1.eat("fish", "3x whole", datetime(2004, 11, 12, 9))
-bird1.receive_health_check("S34", "Dr.John", "Behavioral assessment", Severity.LOW,
-                           datetime(2004, 11, 12, 10, 20))
-bird1.receive_diagnosis("S34", "Dr.John", "Psychological illness - anxiety", Severity.LOW,
-                        "Get 5 min of cuddles every 12 hours.",
-                        [[time(7), "5 min cuddles"], [time(19), "5 min cuddles"]],
-                        datetime(2004, 11, 12, 10, 30)
-                        )
-print(bird1)
-print(bird1.medical_log)
-print(bird1.treatments)
-bird1.receive_treatment("S34", "Dr.John", "5 min cuddles", Severity.LOW,
-                        datetime(2004, 11, 12, 10, 35))
-bird1.drink("water", "500mL", datetime(2004, 11, 12, 12, 10))
-bird1.sleep(datetime(2004, 11, 12, 12, 40))
-bird1.eat("squid", "200g", datetime(2004, 11, 12, 18, 50))
-bird1.receive_treatment("S2", "Chloe", "5 min cuddles", Severity.LOW,
-                        datetime(2004, 11, 12, 19, 00))
-bird1.receive_health_check("S34", "Dr.John", "Behavioral review.", Severity.LOW,
-                           datetime(2004, 11, 13, 10, 20))
-bird1.recover("S34", "Dr.John", "Anxiety cured.",
-              datetime(2004, 11, 13, 10, 35))
-
-print(bird1.medical_log)
-print(bird1)
-print(bird1.log)
-
-bird1.become_older(datetime(2004, 11, 13, 10, 35))
-bird1.become_dirtier(datetime(2004, 11, 13, 11), 7)
-print(bird1)
-bird1.receive_cleaning("S2", "Chloe", datetime(2004, 11, 13, 12), 2)
-print(bird1)
-print(bird1.log)
-
-bird1.add_to_diet("fish", "3x whole", time(9))
-bird1.add_to_diet("squid", "200g", time(19))
-print(bird1.diet)
-bird1.remove_food_from_diet(time(17))
-print(bird1.diet)

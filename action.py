@@ -17,7 +17,9 @@ class Action(Enum):
     SLEEP = ("sleep", "sleeps")
     AGE = ("age", "ages")
     SPEAK = ("speak", "says")
-    FLY = ("attempt to fly", "attempts to fly")
+
+    FLY = ("attempt to fly", "attempts to fly")  # for birds
+    GROOM = ("groom self", "grooms self")  # for mammals
 
     CLEAN = ("clean", "cleans")
     RECEIVE_CLEANING = ("receive cleaning", "is cleaned by")
