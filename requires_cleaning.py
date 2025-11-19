@@ -20,7 +20,7 @@ class RequiresCleaning(ABC):
         """
         Create a new RequiresCleaning instance.
         """
-        self.__cleanliness: Severity = Severity.VERY_HIGH
+        self.__cleanliness: Severity = Severity.VERY_HIGH  # fully clean upon initiation
 
     def get_cleanliness(self) -> Severity:
         """Get how clean the object is represented as an enumeration (Severity)."""

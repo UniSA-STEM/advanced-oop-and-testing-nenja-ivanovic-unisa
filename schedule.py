@@ -31,7 +31,7 @@ class Schedule(DataRecord):
             {"Time": pd.Series(dtype="object")})  # time object - no date required as schedule is daily.
         self.data = pd.concat([self.data, cols_to_add])
 
-    def new(self, new_row: dict):
+    def new(self, new_row: dict) -> int:
         """
         Add a new row of information to the log.
 
@@ -44,7 +44,7 @@ class Schedule(DataRecord):
             - 'ObjectID' (str): ID of the receiver of the action.
             - 'ObjectName' (str): Name of the receiver of the action.
             - 'Details' (str): Further description of the action to be performed.
-        :return: None
+        :return: The reference number of the new row added.
         """
 
         if not isinstance(new_row.get("Time"),
@@ -54,7 +54,7 @@ class Schedule(DataRecord):
         if not isinstance(new_row.get("Action"), Action):
             raise TypeError("The logged action must be from the Action enumeration.")
 
-        super().new(new_row)
+        return super().new(new_row)
 
     def __str__(self) -> str:
         """

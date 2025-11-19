@@ -13,6 +13,8 @@ from pandas import DataFrame
 
 
 class DataRecord(ABC):
+    _next_empty_row = 0  # use to index records, increment by +1 each time a new record is generated.
+
     def __init__(self, record_name: str):
         """
         Create a new DataRecord instance
@@ -57,7 +59,7 @@ class DataRecord(ABC):
     name = property(get_name, set_name)
 
     @abstractmethod
-    def new(self, new_row: dict):
+    def new(self, new_row: dict) -> int:
         """
         Add a new row of information to the DataRecord.
         :param new_row: The new row of information to be added, represented as a dictionary.
@@ -69,16 +71,17 @@ class DataRecord(ABC):
             - 'ObjectName' (str): Name of the receiver of the action.
             - 'Action' (Action): The action being performed.
             - 'Details' (str): Further description of the action.
-        :return: None
+        :return: The reference number of the new row added.
         """
         if not isinstance(new_row, dict):
             raise TypeError("The new row of data must be provided as a Dictionary object.")
         if not set(self.data.columns.values) == set(new_row.keys()):
             raise ValueError(f"The dictionary keys must match the existing columns of the DataRecord data attribute. "
-                             f"\nExpected: {set(self.data.columns.values)}"
+                             f"\nExpected: {set(self.__data.columns.values)}"
                              f"\nGot: {set(new_row.keys())}")
-        next_empty_row = len(self.data)
-        self.data.loc[next_empty_row] = new_row
+        self.__data.loc[DataRecord._next_empty_row] = new_row
+        self.__data.loc[DataRecord._next_empty_row] += 1
+        return DataRecord._next_empty_row - 1  # reduce by one as incrementing by +1 has already occurred.
 
     @abstractmethod  # every concrete subclass must have a special string method for displaying records.
     def __str__(self) -> str:

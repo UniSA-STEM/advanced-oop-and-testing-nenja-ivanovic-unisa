@@ -28,7 +28,7 @@ class Log(DataRecord):
         cols_to_add = DataFrame({"DateTime": pd.Series(dtype="object")})  # datetime object
         self.data = pd.concat([self.data, cols_to_add])
 
-    def new(self, new_row: dict):
+    def new(self, new_row: dict) -> int:
         """
         Add a new row of information to the log.
 
@@ -41,7 +41,7 @@ class Log(DataRecord):
             - 'ObjectName' (str): Name of the receiver of the action.
             - 'Action' (Action): The action being performed.
             - 'Details' (str): Further description of the action.
-        :return: None
+        :return: The reference number of the new row added.
         """
 
         if not isinstance(new_row.get("DateTime"),
@@ -51,7 +51,7 @@ class Log(DataRecord):
         if not isinstance(new_row.get("Action"), Action):
             raise TypeError("The logged action must be from the Action enumeration.")
 
-        super().new(new_row)
+        return super().new(new_row)
 
     def __str__(self) -> str:
         """

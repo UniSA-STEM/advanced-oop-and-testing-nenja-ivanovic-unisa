@@ -31,7 +31,7 @@ class MedicalLog(Log):
             "Treatment": pd.Series(dtype="string")})
         self.data = pd.concat([self.data, cols_to_add])
 
-    def new(self, new_row: dict):
+    def new(self, new_row: dict) -> int:
         """
         Add a new row of information to the log.
 
@@ -46,7 +46,7 @@ class MedicalLog(Log):
             - 'Details' (str): Further description of the action.
             - 'Severity' (Severity): The importance of the action or action outcome.
             - 'Treatment' (str): Any medical action prescribed to be taken as a result of the current action.
-        :return: None
+        :return: int
         """
 
         if not isinstance(new_row.get("DateTime"),
@@ -56,7 +56,7 @@ class MedicalLog(Log):
         if not isinstance(new_row.get("Severity"), Severity):
             raise TypeError("The logged record severity must be from the Severity enumeration.")
 
-        super().new(new_row)
+        return super().new(new_row)
 
     def __str__(self) -> str:
         """
