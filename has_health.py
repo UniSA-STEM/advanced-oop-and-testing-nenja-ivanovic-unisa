@@ -24,9 +24,9 @@ class HasHealth(ABC):
         """
         self.__under_treatment = False  # healthy upon initiation
         self.__medical_log = MedicalLog(
-            f"{self.get_name()} Medical")  # new MedicalLog to store records of medical events.
+            f"{self.get_name()}_{self.get_id()} Medical")  # new MedicalLog to store records of medical events.
         self.__treatments = Schedule(
-            f"{self.get_name()} Treatment")  # create a new schedule to store daily treatment plan.
+            f"{self.get_name()}_{self.get_id()} Treatment")  # create a new schedule to store daily treatment plan.
 
     def get_under_treatment(self) -> bool:
         """Get whether the object is currently receiving medical treatment: true or false. ."""
@@ -118,7 +118,7 @@ class HasHealth(ABC):
                                      "SubjectName": self.get_name(),
                                      "ObjectID": doctor_id,
                                      "ObjectName": doctor_name,
-                                     "Action": Action.RECEIVE_HEALTH_CHECK,
+                                     "Action": Action.RECEIVE_DIAGNOSIS,
                                      "Details": f"{details}",
                                      "Severity": severity,
                                      "Treatment": f"{treatment_desc}"

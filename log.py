@@ -46,7 +46,7 @@ class Log(DataRecord):
 
         if not isinstance(new_row.get("DateTime"),
                           datetime):  # the datetime class will internally handle formatting issues.
-            raise TypeError("at_datetime must be a datetime or time object.")
+            raise TypeError("at_datetime must be a datetime object.")
 
         if not isinstance(new_row.get("Action"), Action):
             raise TypeError("The logged action must be from the Action enumeration.")
@@ -63,6 +63,7 @@ class Log(DataRecord):
         if len(self.data) == 0:
             output += "\nNo data recorded."
         else:
+            output += "\n"
             self.data.sort_values(by=['DateTime'], ascending=True, inplace=True)
             # iterate through log records and add each as a formatted line:
             for row in self.data.itertuples():

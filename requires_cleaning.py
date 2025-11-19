@@ -40,9 +40,10 @@ class RequiresCleaning(ABC):
     def get_log(self) -> Log:
         """ Returns the log of the object's activities."""
 
-    def become_dirtier(self, num_levels: int = 1):
+    def become_dirtier(self, at_datetime: datetime = datetime.now(), num_levels: int = 1):
         """
         Reduce cleanliness by a number of severity levels if possible. Log Event
+        :param at_datetime: The date and time at which the animal became dirtier (default is when the method is called).
         :param num_levels: The number of levels cleanliness is decreasing (default = 1).
         :return: None
         """
@@ -53,17 +54,19 @@ class RequiresCleaning(ABC):
         self.__cleanliness = self.__cleanliness.increase_decrease(num_levels * -1)
 
         # log event:
-        self.get_log().new({"DateTime": datetime.now(),  # date is when method is called.
+        self.get_log().new({"DateTime": at_datetime,
                             "SubjectID": self.get_id(),
                             "SubjectName": self.get_name(),
                             "ObjectID": self.get_id(),
                             "ObjectName": self.get_name(),
                             "Action": Action.BECOME_DIRTIER,
-                            "Details": f"cleanliness is now {self.cleanliness.description}"})
+                            "Details": f"cleanliness is now '{self.cleanliness.description}'"})
 
-    def receive_cleaning(self, object_id: str, object_name: str, num_levels: int = 1, ):
+    def receive_cleaning(self, object_id: str, object_name: str, at_datetime: datetime = datetime.now(),
+                         num_levels: int = 1, ):
         """
         Increase cleanliness by a number of severity levels if possible. Log event.
+        :param at_datetime: The date and time at which the object was cleaned (default is when the method is called).
         :param object_name: The name of the object that the RequiresCleaning object is being cleaned by.
         :param object_id: The id of the object that the RequiresCleaning object is being cleaned by.
         :param num_levels: The number of levels cleanliness is increasing (default = 1).
@@ -75,10 +78,10 @@ class RequiresCleaning(ABC):
         self.__cleanliness = self.__cleanliness.increase_decrease(num_levels)
 
         # log event:
-        self.get_log().new({"DateTime": datetime.now(),  # date is when method is called.
+        self.get_log().new({"DateTime": at_datetime,
                             "SubjectID": self.get_id(),
                             "SubjectName": self.get_name(),
                             "ObjectID": object_id,
                             "ObjectName": object_name,
                             "Action": Action.RECEIVE_CLEANING,
-                            "Details": f"cleanliness is now {self.cleanliness.description}"})
+                            "Details": f"cleanliness is now '{self.__cleanliness.description}'"})

@@ -7,8 +7,8 @@ ID: 110462390
 Username: ivany005
 This is my own work as defined by the University's Academic Integrity Policy.
 """
-from abc import ABC
 from datetime import datetime  # automatically handles formatting issues with dates and times.
+from datetime import time
 
 from action import Action
 from has_health import HasHealth
@@ -17,7 +17,7 @@ from requires_cleaning import RequiresCleaning
 from schedule import Schedule
 
 
-class Animal(ABC, RequiresCleaning, HasHealth):
+class Animal(RequiresCleaning, HasHealth):
     _next_id = 1  # unique identifier of the animal which is incremented by one each time an animal is created.
 
     def __init__(self, name: str, species: str, age: int = 0, sound: str = None):
@@ -39,13 +39,18 @@ class Animal(ABC, RequiresCleaning, HasHealth):
         self.__id = "A" + str(Animal._next_id)  # A to represent 'Animal'
         Animal._next_id += 1
 
-        self.__log = Log(f"{self.__name} General Activity")  # new Log to store records of general activities.
-        self.__diet = Schedule(f"{self.__name} Dietary")  # create a new schedule to store daily feeding plan.
+        self.__log = Log(f"{self.__name}_{self.id} General Activity")  # new Log to store records of general activities.
+        self.__diet = Schedule(f"{self.__name}_{self.id} Dietary")  # create a new schedule to store daily feeding plan.
+
+        RequiresCleaning.__init__(self)
+        HasHealth.__init__(self)
 
     def __str__(self) -> str:
         """Return the Animal's key attributes as a formatted string."""
         health_status = "UNDER TREATMENT" if self.under_treatment else "HEALTHY"
-        return (f"{self.id} ({self.species}): {self.__name}, {self.age} year(s) old [{health_status}]"
+        return (f"ID: {self.id} | NAME: {self.__name} | SPECIES: {self.species}"
+                f"\n > Age: {self.age} year(s) old."
+                f"\n > Health Status: [{health_status}]"
                 f"\n > Cleanliness: {self.cleanliness.description}"
                 f"\n")
 
@@ -87,7 +92,7 @@ class Animal(ABC, RequiresCleaning, HasHealth):
     log = property(get_log)
     diet = property(get_diet)
 
-    def become_older(self, years: float = 1, at_datetime: datetime = datetime.now()):
+    def become_older(self, at_datetime: datetime = datetime.now(), years: float = 1):
         """
         Increase the animal's age by a certain number of years and log event.
         :param years: The number of years that the animal has gotten older (default 1 year).
@@ -106,7 +111,7 @@ class Animal(ABC, RequiresCleaning, HasHealth):
                       "ObjectID": self.__id,
                       "ObjectName": self.__name,
                       "Action": Action.AGE,
-                      "Details": f"by {years} years to become {self.__age} years old"})
+                      "Details": f"by {years} year(s) to become {self.__age} year(s) old"})
 
     def sleep(self, at_datetime: datetime = datetime.now()):
         """
@@ -167,3 +172,29 @@ class Animal(ABC, RequiresCleaning, HasHealth):
                       "ObjectName": self.__name,
                       "Action": Action.DRINK,
                       "Details": f"{quantity} {liquid}"})
+
+    def add_to_diet(self, food: str, quantity: str, at_time: time):
+        """
+        Add food to the animal's diet.
+        :param food: Name of the food to be eaten.
+        :param quantity: Quantity of the food to be eaten.
+        :param at_time: The time at which the animal should eat the food.
+        :return: None
+        """
+        self.diet.new({"Time": at_time,
+                       "SubjectID": self.id,
+                       "SubjectName": self.name,
+                       "ObjectID": self.id,
+                       "ObjectName": self.name,
+                       "Action": Action.EAT,
+                       "Details": f"{quantity} {food}"})
+
+    def remove_food_from_diet(self, after_time: time = time(0, 0, 0),
+                              before_time: time = time(23, 59, 59)):
+        """
+        Remove meal(s) from diet which occur in the provided time range.
+        :param after_time: The start of the time range associated with the meal(s) to be removed.
+        :param before_time: The end of the time range associated with the meal(s) to be removed.
+        :return: None
+        """
+        self.diet.remove(after_time, before_time)

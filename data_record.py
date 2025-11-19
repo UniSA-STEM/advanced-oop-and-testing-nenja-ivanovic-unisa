@@ -80,7 +80,7 @@ class DataRecord(ABC):
                              f"\nExpected: {set(self.__data.columns.values)}"
                              f"\nGot: {set(new_row.keys())}")
         self.__data.loc[DataRecord._next_empty_row] = new_row
-        self.__data.loc[DataRecord._next_empty_row] += 1
+        DataRecord._next_empty_row += 1
         return DataRecord._next_empty_row - 1  # reduce by one as incrementing by +1 has already occurred.
 
     @abstractmethod  # every concrete subclass must have a special string method for displaying records.
