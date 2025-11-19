@@ -20,6 +20,7 @@ class Action(Enum):
 
     FLY = ("attempt to fly", "attempts to fly")  # for birds
     GROOM = ("groom self", "grooms self")  # for mammals
+    BASK = ("bask in sun", "basks in sun")  # for reptiles
 
     CLEAN = ("clean", "cleans")
     RECEIVE_CLEANING = ("receive cleaning", "is cleaned by")

@@ -12,6 +12,7 @@ import pytest
 
 from bird import Bird
 from mammal import Mammal
+from reptile import Reptile
 from severity import Severity
 
 
@@ -216,5 +217,27 @@ class TestAnimal:
                 'MOMO_A6 GENERAL ACTIVITY LOG:\n'
                 '\n'
                 '[2004-11-12 15:00:00] Momo_A6 grooms self (picks at its yellow-brown fur).\n'
+                '----------------------------------------------------------------------------------------------\n'
+                )
+
+    @pytest.fixture
+    def reptile(self) -> Reptile:
+        return Reptile("Lizzy", "Komodo Dragon", "Hiss", "rough", True, 5)
+
+    def test_reptile_str_and_bask_log(self, reptile: Reptile) -> None:
+        assert (str(reptile) ==
+                'ID: A7 | NAME: Lizzy | SPECIES: Komodo Dragon\n'
+                ' > Age: 5 year(s) old.\n'
+                ' > Health Status: [HEALTHY]\n'
+                ' > Cleanliness: Very High\n'
+                ' > Scale type: rough\n'
+                ' > Venomous: True\n'
+                )
+        reptile.bask(datetime(2004, 11, 12, 15, 0))
+        assert (str(reptile.log) ==
+                '----------------------------------------------------------------------------------------------\n'
+                'LIZZY_A7 GENERAL ACTIVITY LOG:\n'
+                '\n'
+                '[2004-11-12 15:00:00] Lizzy_A7 basks in sun (to regulate body temperature).\n'
                 '----------------------------------------------------------------------------------------------\n'
                 )
