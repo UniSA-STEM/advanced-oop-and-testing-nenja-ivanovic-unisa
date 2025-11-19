@@ -40,7 +40,7 @@ class HasHealth(ABC):
         """ Returns the object's daily medical treatment schedule."""
         return self.__treatments
 
-    cleanliness = property(get_under_treatment)
+    under_treatment = property(get_under_treatment)
     medical_log = property(get_medical_log)
     treatments = property(get_treatments)
 

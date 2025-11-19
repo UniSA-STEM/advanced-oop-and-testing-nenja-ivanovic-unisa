@@ -39,8 +39,22 @@ class Animal(ABC, RequiresCleaning, HasHealth):
         self.__id = "A" + str(Animal._next_id)  # A to represent 'Animal'
         Animal._next_id += 1
 
-        self.__log = Log(f"{self.name} General Activity")  # new Log to store records of general activities.
-        self.__diet = Schedule(f"{self.name} Dietary")  # create a new schedule to store daily feeding plan.
+        self.__log = Log(f"{self.__name} General Activity")  # new Log to store records of general activities.
+        self.__diet = Schedule(f"{self.__name} Dietary")  # create a new schedule to store daily feeding plan.
+
+    def __str__(self) -> str:
+        """Return the Animal's key attributes as a formatted string."""
+        health_status = "UNDER TREATMENT" if self.under_treatment else "HEALTHY"
+        return (f"{self.id} ({self.species}): {self.__name}, {self.age} year(s) old [{health_status}]"
+                f"\n > Cleanliness: {self.cleanliness.description}"
+                f"\n")
+
+    def __eq__(self, other) -> bool:
+        """Determine whether one Animal is equal to another."""
+        if isinstance(other, Animal) & other.id == self.__id:
+            return True
+        else:
+            return False
 
     def get_name(self) -> str:
         """Return a string representing the animal's name."""
@@ -54,6 +68,10 @@ class Animal(ABC, RequiresCleaning, HasHealth):
         """Return a string representing the animal's unique identifier."""
         return self.__id
 
+    def get_species(self) -> str:
+        """Return a string representing the animal's species."""
+        return self.__species
+
     def get_log(self) -> Log:
         """ Returns the log of the animal's activities."""
         return self.__log
@@ -65,6 +83,7 @@ class Animal(ABC, RequiresCleaning, HasHealth):
     name = property(get_name)
     age = property(get_age)
     id = property(get_id)
+    species = property(get_species)
     log = property(get_log)
     diet = property(get_diet)
 

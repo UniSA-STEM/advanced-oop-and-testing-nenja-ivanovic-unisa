@@ -17,9 +17,12 @@ class Action(Enum):
     SLEEP = ("sleep", "sleeps")
     AGE = ("age", "ages")
     SPEAK = ("speak", "says")
+    FLY = ("attempt to fly", "attempts to fly")
+
     CLEAN = ("clean", "cleans")
     RECEIVE_CLEANING = ("receive cleaning", "is cleaned by")
     BECOME_DIRTIER = ("become dirtier", "becomes dirtier")
+
     TREAT = ("treat", "treats")
     RECEIVE_TREATMENT = ("receive treatment", "receives treatment from")
     CHECK_HEALTH = ("perform health checkup on", "checks health of")
