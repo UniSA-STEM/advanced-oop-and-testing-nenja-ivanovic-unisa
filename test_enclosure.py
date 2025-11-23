@@ -57,11 +57,11 @@ class TestEnclosure:
     def test_initial_str_empty_desert(self, desert1: Enclosure) -> None:
         s = str(desert1)
         expected = (
-            f"ID: {desert1.id} | NAME: {desert1.name} | ENVIRONMENTAL TYPE: {desert1.environmental_type.value}\n"
-            f" > Species: {desert1.species}\n"
-            f" > Size: {desert1.size} squared centimeters\n"
-            f" > Cleanliness: {desert1.cleanliness.description}\n"
-            f" > Inhabitants: 0\n"
+            f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
+            " > Species: None\n"
+            " > Size: 10 squared centimeters\n"
+            " > Cleanliness: Very High\n"
+            " > Inhabitants: 0\n"
         )
         assert s == expected
 
@@ -69,9 +69,7 @@ class TestEnclosure:
         with pytest.raises(ValueError) as excinfo:
             aquatic1.add_animal(cobra1)
         expected_msg = (
-            f"{cobra1.name}_{cobra1.id} requires a(n) "
-            f"{cobra1.habitat.value.upper()} habitat and cannot live in "
-            f"a(n) {aquatic1.environmental_type.value.upper()} enclosure."
+            f"Shai-Hulud_{cobra1.id} requires a(n) DESERT habitat and cannot live in a(n) AQUATIC enclosure."
         )
         assert str(excinfo.value) == expected_msg
 
@@ -87,12 +85,12 @@ class TestEnclosure:
 
         s1 = str(desert1)
         expected1 = (
-            f"ID: {desert1.id} | NAME: {desert1.name} | ENVIRONMENTAL TYPE: {desert1.environmental_type.value}\n"
-            f" > Species: {cobra1.species}\n"
-            f" > Size: {desert1.size} squared centimeters\n"
-            f" > Cleanliness: {desert1.cleanliness.description}\n"
-            f" > Inhabitants: 1\n"
-            f"   > {cobra1.name}_{cobra1.id}\n"
+            f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
+            " > Species: King Cobra\n"
+            " > Size: 10 squared centimeters\n"
+            " > Cleanliness: Very High\n"
+            " > Inhabitants: 1\n"
+            f"   > Shai-Hulud_{cobra1.id}\n"
         )
         assert s1 == expected1
 
@@ -102,31 +100,29 @@ class TestEnclosure:
         desert1.add_animal(cobra2)
         s2 = str(desert1)
         expected2 = (
-            f"ID: {desert1.id} | NAME: {desert1.name} | ENVIRONMENTAL TYPE: {desert1.environmental_type.value}\n"
-            f" > Species: {cobra1.species}\n"
-            f" > Size: {desert1.size} squared centimeters\n"
-            f" > Cleanliness: {desert1.cleanliness.description}\n"
-            f" > Inhabitants: 2\n"
-            f"   > {cobra1.name}_{cobra1.id}\n"
-            f"   > {cobra2.name}_{cobra2.id}\n"
+            f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
+            " > Species: King Cobra\n"
+            " > Size: 10 squared centimeters\n"
+            " > Cleanliness: Very High\n"
+            " > Inhabitants: 2\n"
+            f"   > Shai-Hulud_{cobra1.id}\n"
+            f"   > LittleMaker_{cobra2.id}\n"
         )
         assert s2 == expected2
 
         with pytest.raises(ValueError) as exc_mouse:
             desert1.add_animal(desert_mouse)
         expected_mouse_msg = (
-            f"{desert_mouse.name}_{desert_mouse.id} cannot live in "
-            f"{desert1.name}_{desert1.id} as animals of a different species already live there "
-            f"({desert1.species})."
+            f"Muad'Dib_{desert_mouse.id} cannot live in "
+            f"Dune_{desert1.id} as animals of a different species already live there (King Cobra)."
         )
         assert str(exc_mouse.value) == expected_mouse_msg
 
         with pytest.raises(ValueError) as exc_rattle:
             desert1.add_animal(rattlesnake)
         expected_rattle_msg = (
-            f"{rattlesnake.name}_{rattlesnake.id} cannot live in "
-            f"{desert1.name}_{desert1.id} as animals of a different species already live there "
-            f"({desert1.species})."
+            f"Sally_{rattlesnake.id} cannot live in "
+            f"Dune_{desert1.id} as animals of a different species already live there (King Cobra)."
         )
         assert str(exc_rattle.value) == expected_rattle_msg
 
@@ -142,21 +138,21 @@ class TestEnclosure:
         desert1.remove_animal(cobra2)
         s = str(desert1)
         expected = (
-            f"ID: {desert1.id} | NAME: {desert1.name} | ENVIRONMENTAL TYPE: {desert1.environmental_type.value}\n"
-            f" > Species: {cobra1.species}\n"
-            f" > Size: {desert1.size} squared centimeters\n"
-            f" > Cleanliness: {desert1.cleanliness.description}\n"
-            f" > Inhabitants: 1\n"
-            f"   > {cobra1.name}_{cobra1.id}\n"
+            f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
+            " > Species: King Cobra\n"
+            " > Size: 10 squared centimeters\n"
+            " > Cleanliness: Very High\n"
+            " > Inhabitants: 1\n"
+            f"   > Shai-Hulud_{cobra1.id}\n"
         )
         assert s == expected
 
         with pytest.raises(AssertionError) as excinfo:
             desert1.remove_animal(cobra2)
-        assert (
-                f"{cobra2.name}_{cobra2.id} does not live in {desert1.name}_{desert1.id}"
-                in str(excinfo.value)
+        expected_err = (
+            f"LittleMaker_{cobra2.id} does not live in Dune_{desert1.id}"
         )
+        assert expected_err in str(excinfo.value)
 
     def test_cannot_remove_under_treatment_and_final_state(
             self,
@@ -179,7 +175,7 @@ class TestEnclosure:
         with pytest.raises(ValueError) as excinfo:
             desert1.remove_animal(cobra1)
         expected_msg = (
-            f"{cobra1.name}_{cobra1.id} is under treatment so they cannot be relocated at this time."
+            f"Shai-Hulud_{cobra1.id} is under treatment so they cannot be relocated at this time."
         )
         assert str(excinfo.value) == expected_msg
 
@@ -188,22 +184,22 @@ class TestEnclosure:
 
         s_empty = str(desert1)
         expected_empty = (
-            f"ID: {desert1.id} | NAME: {desert1.name} | ENVIRONMENTAL TYPE: {desert1.environmental_type.value}\n"
-            f" > Species: {desert1.species}\n"
-            f" > Size: {desert1.size} squared centimeters\n"
-            f" > Cleanliness: {desert1.cleanliness.description}\n"
-            f" > Inhabitants: 0\n"
+            f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
+            " > Species: None\n"
+            " > Size: 10 squared centimeters\n"
+            " > Cleanliness: Very High\n"
+            " > Inhabitants: 0\n"
         )
         assert s_empty == expected_empty
 
         desert1.add_animal(desert_mouse)
         s_mouse = str(desert1)
         expected_mouse = (
-            f"ID: {desert1.id} | NAME: {desert1.name} | ENVIRONMENTAL TYPE: {desert1.environmental_type.value}\n"
-            f" > Species: {desert_mouse.species}\n"
-            f" > Size: {desert1.size} squared centimeters\n"
-            f" > Cleanliness: {desert1.cleanliness.description}\n"
-            f" > Inhabitants: 1\n"
-            f"   > {desert_mouse.name}_{desert_mouse.id}\n"
+            f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
+            " > Species: Brown Desert Mouse\n"
+            " > Size: 10 squared centimeters\n"
+            " > Cleanliness: Very High\n"
+            " > Inhabitants: 1\n"
+            f"   > Muad'Dib_{desert_mouse.id}\n"
         )
         assert s_mouse == expected_mouse

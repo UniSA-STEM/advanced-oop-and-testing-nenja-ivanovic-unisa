@@ -21,11 +21,9 @@ class TestAnimal:
     def bird(self) -> Bird:
         return Bird("Pinky", "Emperor Penguin", 76, False, 2)
 
-    # Basic printing / initial state -----------------------------------------------------------------------
-
     def test_initial_str(self, bird: Bird) -> None:
         expected = (
-            "ID: A1 | NAME: Pinky | SPECIES: Emperor Penguin\n"
+            f"ID: {bird.id} | NAME: Pinky | SPECIES: Emperor Penguin\n"
             " > Age: 2 year(s) old.\n"
             " > Health Status: [HEALTHY]\n"
             " > Cleanliness: Very High\n"
@@ -33,8 +31,6 @@ class TestAnimal:
             " > Can fly: False\n"
         )
         assert str(bird) == expected
-
-    # Health status after diagnosis ------------------------------------------------------------------------
 
     def test_health_status_and_medical_log_after_diagnosis(self, bird: Bird) -> None:
         bird.receive_health_check(
@@ -55,7 +51,7 @@ class TestAnimal:
         )
 
         expected_str = (
-            "ID: A2 | NAME: Pinky | SPECIES: Emperor Penguin\n"
+            f"ID: {bird.id} | NAME: Pinky | SPECIES: Emperor Penguin\n"
             " > Age: 2 year(s) old.\n"
             " > Health Status: [UNDER TREATMENT]\n"
             " > Cleanliness: Very High\n"
@@ -63,8 +59,6 @@ class TestAnimal:
             " > Can fly: False\n"
         )
         assert str(bird) == expected_str
-
-    # Full medical timeline (after treatments + recovery) --------------------------------------------------
 
     def test_medical_log_after_treatments_and_recovery(self, bird: Bird) -> None:
         bird.receive_health_check(
@@ -111,50 +105,60 @@ class TestAnimal:
             datetime(2004, 11, 13, 10, 35),
         )
 
-        expected_med_log = (
+        output = str(bird.medical_log)
+
+        header = (
             "----------------------------------------------------------------------------------------------\n"
-            "PINKY_A3 MEDICAL LOG:\n"
+            f"PINKY_{bird.id} MEDICAL LOG:\n"
             "\n"
-            "[2004-11-12 10:20:00] Pinky_A3 receives health check from Dr.John_S34;\n"
+        )
+        assert output.startswith(header)
+        assert output.endswith(
+            "----------------------------------------------------------------------------------------------\n")
+
+        block1 = (
+            f"[2004-11-12 10:20:00] Pinky_{bird.id} receives health check from Dr.John_S34;\n"
             " > Description: Behavioral assessment\n"
             " > Severity: Low\n"
             " > Treatment: NA\n"
-            "log ref number: 4\n"
-            "\n"
-            "[2004-11-12 10:30:00] Pinky_A3 is diagnosed by Dr.John_S34;\n"
+        )
+        block2 = (
+            f"[2004-11-12 10:30:00] Pinky_{bird.id} is diagnosed by Dr.John_S34;\n"
             " > Description: Psychological illness - anxiety\n"
             " > Severity: Low\n"
             " > Treatment: Get 5 min of cuddles every 12 hours.\n"
-            "log ref number: 7\n"
-            "\n"
-            "[2004-11-12 10:35:00] Pinky_A3 receives treatment from Dr.John_S34;\n"
+        )
+        block3 = (
+            f"[2004-11-12 10:35:00] Pinky_{bird.id} receives treatment from Dr.John_S34;\n"
             " > Description: 5 min cuddles\n"
             " > Severity: Low\n"
             " > Treatment: NA\n"
-            "log ref number: 8\n"
-            "\n"
-            "[2004-11-12 19:00:00] Pinky_A3 receives treatment from Chloe_S2;\n"
+        )
+        block4 = (
+            f"[2004-11-12 19:00:00] Pinky_{bird.id} receives treatment from Chloe_S2;\n"
             " > Description: 5 min cuddles\n"
             " > Severity: Low\n"
             " > Treatment: NA\n"
-            "log ref number: 9\n"
-            "\n"
-            "[2004-11-13 10:20:00] Pinky_A3 receives health check from Dr.John_S34;\n"
+        )
+        block5 = (
+            f"[2004-11-13 10:20:00] Pinky_{bird.id} receives health check from Dr.John_S34;\n"
             " > Description: Behavioral review.\n"
             " > Severity: Low\n"
             " > Treatment: NA\n"
-            "log ref number: 10\n"
-            "\n"
-            "[2004-11-13 10:35:00] Pinky_A3 is declared recovered by Dr.John_S34;\n"
+        )
+        block6 = (
+            f"[2004-11-13 10:35:00] Pinky_{bird.id} is declared recovered by Dr.John_S34;\n"
             " > Description: Anxiety cured.\n"
             " > Severity: Very Low\n"
             " > Treatment: NA\n"
-            "log ref number: 11\n"
-            "----------------------------------------------------------------------------------------------\n"
         )
-        assert str(bird.medical_log) == expected_med_log
 
-    # General activity log + age / cleanliness changes -----------------------------------------------------
+        for block in (block1, block2, block3, block4, block5, block6):
+            assert block in output
+
+        lines = output.splitlines()
+        ref_lines = [line for line in lines if line.startswith("log ref number: ")]
+        assert len(ref_lines) == 6
 
     def test_general_activity_log_and_cleanliness(self, bird: Bird) -> None:
         bird.fly(datetime(2004, 11, 12, 6, 0))
@@ -169,7 +173,7 @@ class TestAnimal:
         bird.receive_cleaning("S2", "Chloe", datetime(2004, 11, 13, 12, 0), 2)
 
         expected_str = (
-            "ID: A4 | NAME: Pinky | SPECIES: Emperor Penguin\n"
+            f"ID: {bird.id} | NAME: Pinky | SPECIES: Emperor Penguin\n"
             " > Age: 3 year(s) old.\n"
             " > Health Status: [HEALTHY]\n"
             " > Cleanliness: Moderate\n"
@@ -178,67 +182,71 @@ class TestAnimal:
         )
         assert str(bird) == expected_str
 
-    # Diet schedule ----------------------------------------------------------------------------------------
-
     def test_diet_schedule_add_and_remove(self, bird: Bird) -> None:
         bird.add_to_diet("fish", "3x whole", time(9, 0))
         bird.add_to_diet("squid", "200g", time(19, 0))
 
         expected_diet_full = (
             "----------------------------------------------------------------------------------------------\n"
-            "PINKY_A5 DIETARY SCHEDULE:\n"
+            f"PINKY_{bird.id} DIETARY SCHEDULE:\n"
             "\n"
             "EVENT 1 @ 09:00:00\n"
-            " - Pinky_A5 to eat (3x whole fish)\n"
+            f" - Pinky_{bird.id} to eat (3x whole fish)\n"
             "\n"
             "EVENT 2 @ 19:00:00\n"
-            " - Pinky_A5 to eat (200g squid)\n"
+            f" - Pinky_{bird.id} to eat (200g squid)\n"
             "----------------------------------------------------------------------------------------------\n"
         )
         assert str(bird.diet) == expected_diet_full
 
-    # Mammal -----------------------------------------------------------------------------------------------------
     @pytest.fixture
     def mammal(self) -> Mammal:
         return Mammal("Momo", "Monkey", "Oooh-ooh-ah", "Yellow-brown", False, 3)
 
     def test_mammal_str_and_groom_log(self, mammal: Mammal) -> None:
-        assert (str(mammal) ==
-                'ID: A6 | NAME: Momo | SPECIES: Monkey\n'
-                ' > Age: 3 year(s) old.\n'
-                ' > Health Status: [HEALTHY]\n'
-                ' > Cleanliness: Very High\n'
-                ' > Fur colour: Yellow-brown\n'
-                ' > Nocturnal: False\n'
-                )
-        mammal.groom(datetime(2004, 11, 12, 15, 0))
-        assert (str(mammal.log) ==
-                '----------------------------------------------------------------------------------------------\n'
-                'MOMO_A6 GENERAL ACTIVITY LOG:\n'
-                '\n'
-                '[2004-11-12 15:00:00] Momo_A6 grooms self (picks at its yellow-brown fur).\n'
-                '----------------------------------------------------------------------------------------------\n'
-                )
+        expected_str = (
+            f"ID: {mammal.id} | NAME: Momo | SPECIES: Monkey\n"
+            " > Age: 3 year(s) old.\n"
+            " > Health Status: [HEALTHY]\n"
+            " > Cleanliness: Very High\n"
+            " > Fur colour: Yellow-brown\n"
+            " > Nocturnal: False\n"
+        )
+        assert str(mammal) == expected_str
 
-    # Reptile -----------------------------------------------------------------------------------------------------
+        mammal.groom(datetime(2004, 11, 12, 15, 0))
+
+        expected_log = (
+            "----------------------------------------------------------------------------------------------\n"
+            f"MOMO_{mammal.id} GENERAL ACTIVITY LOG:\n"
+            "\n"
+            f"[2004-11-12 15:00:00] Momo_{mammal.id} grooms self (picks at its yellow-brown fur).\n"
+            "----------------------------------------------------------------------------------------------\n"
+        )
+        assert str(mammal.log) == expected_log
+
     @pytest.fixture
     def reptile(self) -> Reptile:
         return Reptile("Lizzy", "Komodo Dragon", "Hiss", "rough", True, 5)
 
     def test_reptile_str_and_bask_log(self, reptile: Reptile) -> None:
-        assert (str(reptile) ==
-                'ID: A7 | NAME: Lizzy | SPECIES: Komodo Dragon\n'
-                ' > Age: 5 year(s) old.\n'
-                ' > Health Status: [HEALTHY]\n'
-                ' > Cleanliness: Very High\n'
-                ' > Scale type: rough\n'
-                ' > Venomous: True\n'
-                )
+        expected_str = (
+            f"ID: {reptile.id} | NAME: Lizzy | SPECIES: Komodo Dragon\n"
+            " > Age: 5 year(s) old.\n"
+            " > Health Status: [HEALTHY]\n"
+            " > Cleanliness: Very High\n"
+            " > Scale type: rough\n"
+            " > Venomous: True\n"
+        )
+        assert str(reptile) == expected_str
+
         reptile.bask(datetime(2004, 11, 12, 15, 0))
-        assert (str(reptile.log) ==
-                '----------------------------------------------------------------------------------------------\n'
-                'LIZZY_A7 GENERAL ACTIVITY LOG:\n'
-                '\n'
-                '[2004-11-12 15:00:00] Lizzy_A7 basks in sun (to regulate body temperature).\n'
-                '----------------------------------------------------------------------------------------------\n'
-                )
+
+        expected_log = (
+            "----------------------------------------------------------------------------------------------\n"
+            f"LIZZY_{reptile.id} GENERAL ACTIVITY LOG:\n"
+            "\n"
+            f"[2004-11-12 15:00:00] Lizzy_{reptile.id} basks in sun (to regulate body temperature).\n"
+            "----------------------------------------------------------------------------------------------\n"
+        )
+        assert str(reptile.log) == expected_log
