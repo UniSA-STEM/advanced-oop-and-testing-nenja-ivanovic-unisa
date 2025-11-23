@@ -149,10 +149,10 @@ class HasHealth(ABC):
     def recover(self, doctor_id: str, doctor_name: str, details: str, at_datetime=datetime.now()) -> int:
         """
         Log that the object has been declared recovered, clear scheduled treatments and change under_treatment status.
-        :param details: What the treatment involved.
+        :param details: Any further details of the recovery.
         :param doctor_name: The name of the object declaring recovery.
         :param doctor_id: The id of the object declaring recovery.
-        :param at_datetime: The date and time at which the treatment was given (default is when the method is called).
+        :param at_datetime: The date and time at which the declaration was given (default is when the method is called).
         :return: The reference number of the new row added.
         """
         self.__under_treatment = False
