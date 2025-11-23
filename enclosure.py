@@ -7,12 +7,15 @@ ID: 110462390
 Username: ivany005
 This is my own work as defined by the University's Academic Integrity Policy.
 """
-from typing import Set
+from datetime import time
 
 from animal import Animal
 from environmental_type import EnvironmentalType
 from log import Log
+from mammal import Mammal
+from reptile import Reptile
 from requires_cleaning import RequiresCleaning
+from severity import Severity
 
 
 class Enclosure(RequiresCleaning):
@@ -28,7 +31,7 @@ class Enclosure(RequiresCleaning):
         self.__name = name
         self.__size = size
         self.__species = None  # The species of animal housed by the enclosure (default is None).
-        self.__inhabitants = Set()  # set containing the animals living in the enclosure.
+        self.__inhabitants = []  # list containing the animals living in the enclosure.
 
         if not isinstance(environmental_type, EnvironmentalType):
             raise TypeError("Environmental type of enclosure must be an EnvironmentalType enumeration.")
@@ -54,7 +57,7 @@ class Enclosure(RequiresCleaning):
 
     def __eq__(self, other) -> bool:
         """Determine whether one Enclosure is equal to another."""
-        if isinstance(other, Enclosure) & other.id == self.__id:
+        if isinstance(other, Enclosure) & (other.id == self.__id):
             return True
         else:
             return False
@@ -79,7 +82,7 @@ class Enclosure(RequiresCleaning):
         """Get the environmental type of the enclosure represented as an enumeration (EnvironmentalType)."""
         return self.__environmental_type
 
-    def get_inhabitants(self) -> Set[Animal]:
+    def get_inhabitants(self) -> list[Animal]:
         """Return a list containing the animals that live in the enclosure."""
         return self.__inhabitants
 
@@ -107,14 +110,16 @@ class Enclosure(RequiresCleaning):
         if animal.under_treatment:
             raise ValueError(f"{animal.name}_{animal.id} is under treatment so they cannot be relocated at this time.")
         if animal.habitat != self.environmental_type:
-            raise ValueError(f"{animal.name}_{animal.id} requires a(n) {animal.habitat} habitat and cannot live in a(n)"
-                             f"{self.environmental_type} enclosure.")
-        if len(self.inhabitants) > 0 & self.__species != animal.species:
+            raise ValueError(
+                f"{animal.name}_{animal.id} requires a(n) {animal.habitat.value.upper()} habitat and cannot live in "
+                f"a(n) {self.environmental_type.value.upper()} enclosure.")
+        if (len(self.inhabitants) > 0) & (self.__species != animal.species):
             raise ValueError(
                 f"{animal.name}_{animal.id} cannot live in {self.__name}_{self.id} as animals of a different"
                 f" species already live there ({self.species}).")
-        self.__inhabitants.add(animal)
-        self.__species = animal.species  # update species attribute in case the enclosure was previously empty.
+        if animal not in self.inhabitants:  # unnecessary if animal already is in enclosure.
+            self.__inhabitants.append(animal)
+            self.__species = animal.species  # update species attribute in case the enclosure was previously empty.
 
     def remove_animal(self, animal: Animal):
         """
@@ -128,6 +133,72 @@ class Enclosure(RequiresCleaning):
         if animal.under_treatment:
             raise ValueError(f"{animal.name}_{animal.id} is under treatment so they cannot be relocated at this time.")
 
-        animal_matches = [inhabitant for inhabitant in self.inhabitants if inhabitant.id == animal.id]
-        assert len(animal_matches) != 0, f"{animal.name}_{animal.id} does not live in {self.__name}_{self.id}"
-        self.inhabitants.remove(animal_matches[1])
+        assert animal in self.inhabitants, f"{animal.name}_{animal.id} does not live in {self.__name}_{self.id}"
+        self.inhabitants.remove(animal)
+        if len(self.inhabitants) == 0:
+            self.__species = None
+
+
+aquatic1 = Enclosure("BlueLagoon", EnvironmentalType.AQUATIC, 5)
+desert1 = Enclosure("Dune", EnvironmentalType.DESERT, 10)
+
+cobra1 = Reptile("Shai-Hulud", "King Cobra", "Hiss", "Smooth", True, 4,
+                 habitat=EnvironmentalType.DESERT)
+cobra2 = Reptile("LittleMaker", "King Cobra", "Hiss", "Smooth", True, 0,
+                 habitat=EnvironmentalType.DESERT)
+rattlesnake = Reptile("Sally", "Horned Rattlesnake", "Hiss", "Keeled", True,
+                      4, habitat=EnvironmentalType.DESERT)
+desert_mouse = Mammal("Muad'Dib", "Brown Desert Mouse", "Squeak", "Brown", True,
+                      habitat=EnvironmentalType.DESERT)
+
+print(desert1)  # display empty
+
+# cannot add: wrong habitat
+try:
+    aquatic1.add_animal(cobra1)
+except ValueError as e:
+    print(f"{e}\n")
+
+desert1.add_animal(cobra1)
+print(desert1)  # snake added
+
+desert1.add_animal(cobra1)
+print(desert1)  # no changes because snake already exists
+
+desert1.add_animal(cobra2)
+print(desert1)  # snake added
+
+# cannot add: wrong species
+try:
+    desert1.add_animal(desert_mouse)
+except ValueError as e:
+    print(f"{e}\n")
+try:
+    desert1.add_animal(rattlesnake)
+except ValueError as e:
+    print(f"{e}\n")
+
+desert1.remove_animal(cobra2)
+print(desert1)  # snake removed
+
+# cannot remove: animal does not live in the enclosure anymore
+try:
+    desert1.remove_animal(cobra2)
+except AssertionError as e:
+    print(f"{e}\n")
+
+cobra1.receive_diagnosis("S34", "Dr.John", "Illness - food poisoning.", Severity.MODERATE,
+                         "Take antidote", [[time(9), "Take antidote"]])
+
+# cannot remove: animal is under treatment
+try:
+    desert1.remove_animal(cobra1)
+except ValueError as e:
+    print(f"{e}\n")
+
+cobra1.recover("S34", "Dr.John", "Full recovery of food poisoning.")
+desert1.remove_animal(cobra1)
+print(desert1)  # snake removed
+
+desert1.add_animal(desert_mouse)
+print(desert1)  # mouse able to be added as all snakes were removed.

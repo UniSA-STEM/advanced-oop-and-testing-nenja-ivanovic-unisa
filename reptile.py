@@ -10,11 +10,12 @@ This is my own work as defined by the University's Academic Integrity Policy.
 
 from action import Action
 from animal import Animal
+from environmental_type import EnvironmentalType
 
 
 class Reptile(Animal):
     def __init__(self, name: str, species: str, sound: str, scale_type: str,
-                 is_venomous: bool = False, age: int = 0):
+                 is_venomous: bool = False, age: int = 0, habitat: EnvironmentalType = EnvironmentalType.RAINFOREST):
         """
         Initialise new Reptile instances.
         :param name: The name of the reptile.
@@ -23,8 +24,9 @@ class Reptile(Animal):
         :param scale_type: The primary type/description of the reptile's scales (e.g. 'smooth', 'keeled').
         :param is_venomous: Whether the reptile is venomous (False by default).
         :param age: The age of the reptile in years (default is 0).
+        :param habitat: The environmental type the animal lives in (default is DESERT).
         """
-        super().__init__(name, species, age, sound)
+        super().__init__(name, species, habitat, age, sound)
 
         if not isinstance(is_venomous, bool):
             raise TypeError("A reptile's 'is_venomous' attribute must be boolean.")

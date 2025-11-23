@@ -21,12 +21,13 @@ from schedule import Schedule
 class Animal(RequiresCleaning, HasHealth):
     _next_id = 1  # unique identifier of the animal which is incremented by one each time an animal is created.
 
-    def __init__(self, name: str, species: str, habitat: EnvironmentalType, age: int = 0, sound: str = None):
+    def __init__(self, name: str, species: str, habitat: EnvironmentalType = EnvironmentalType.GRASS, age: int = 0,
+                 sound: str = None):
         """
         Initialise new Animal instances.
         :param name: The name of the animal.
         :param species: The specific species name of the Animal.
-        :param habitat: The environmental type the animal lives in.
+        :param habitat: The environmental type the animal lives in (default is GRASS).
         :param age:  The age of the animal in years (default is 0).
         :param sound: The sound that the animal makes (if any; default is None).
         """
@@ -62,7 +63,7 @@ class Animal(RequiresCleaning, HasHealth):
 
     def __eq__(self, other) -> bool:
         """Determine whether one Animal is equal to another."""
-        if isinstance(other, Animal) & other.id == self.__id:
+        if isinstance(other, Animal) & (other.id == self.__id):
             return True
         else:
             return False

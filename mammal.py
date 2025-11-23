@@ -10,11 +10,12 @@ This is my own work as defined by the University's Academic Integrity Policy.
 
 from action import Action
 from animal import Animal
+from environmental_type import EnvironmentalType
 
 
 class Mammal(Animal):
     def __init__(self, name: str, species: str, sound: str, fur_colour: str,
-                 is_nocturnal: bool = False, age: int = 0):
+                 is_nocturnal: bool = False, age: int = 0, habitat: EnvironmentalType = EnvironmentalType.GRASS):
         """
         Initialise new Mammal instances.
         :param name: The name of the mammal.
@@ -23,8 +24,9 @@ class Mammal(Animal):
         :param fur_colour: The primary colour of the mammal's fur.
         :param is_nocturnal: Whether the mammal is primarily active at night (False by default).
         :param age: The age of the mammal in years (default is 0).
+        :param habitat: The environmental type the Mammal lives in (default is GRASS).
         """
-        super().__init__(name, species, age, sound)
+        super().__init__(name, species, habitat, age, sound)
 
         if not isinstance(fur_colour, str):
             raise TypeError("A mammal's 'fur_colour' attribute must be provided as a string.")

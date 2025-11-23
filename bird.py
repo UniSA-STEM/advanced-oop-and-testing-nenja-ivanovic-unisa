@@ -10,19 +10,22 @@ This is my own work as defined by the University's Academic Integrity Policy.
 
 from action import Action
 from animal import Animal
+from environmental_type import EnvironmentalType
 
 
 class Bird(Animal):
-    def __init__(self, name: str, species: str, wingspan: float, can_fly: bool = True, age: int = 0):
+    def __init__(self, name: str, species: str, wingspan: float, can_fly: bool = True, age: int = 0,
+                 habitat: EnvironmentalType = EnvironmentalType.RAINFOREST):
         """
         Initialise new Bird instances.
         :param name: The name of the bird.
         :param species: The specific species of bird that the instance is.
         :param age:  The age of the bird in years (default is 0).
+        :param habitat: The environmental type the bird lives in (default is RAINFOREST).
         :param can_fly: Whether the bird can fly (True by default).
         :param wingspan: The wingspan of the bird in cm.
         """
-        super().__init__(name, species, age, "Squawk")  # all birds say squawk
+        super().__init__(name, species, habitat, age, "Squawk")  # all birds say squawk
 
         if not isinstance(can_fly, bool):
             raise TypeError("A bird's 'can_fly' attribute must be boolean.")

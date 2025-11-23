@@ -14,3 +14,4 @@ class EnvironmentalType(Enum):
     RAINFOREST = "Rainforest"
     SAVANNAH = "Savannah"
     DESERT = "Desert"
+    GRASS = "Grass"
