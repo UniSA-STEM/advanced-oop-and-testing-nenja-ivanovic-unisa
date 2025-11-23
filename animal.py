@@ -1,7 +1,6 @@
 """
 File: animal.py
 Description: Contains the abstract Animal class which is the root class of all animal objects that live in the zoo.
-have a name and age.
 Author: Nenja Ivanovic
 ID: 110462390
 Username: ivany005

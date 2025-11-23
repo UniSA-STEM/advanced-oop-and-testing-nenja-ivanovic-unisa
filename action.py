@@ -35,6 +35,9 @@ class Action(Enum):
     RECOVER = ("recover", "is declared recovered by")
     DECLARE_RECOVERY = ("declare recovery of", "declares recovery of")
 
+    ASSIGN = ("be assigned to", "is assigned to")
+    UNASSIGN = ("be unassigned from", "is unassigned from")
+
     def __init__(self, imperative: str, present_tense: str):
         self.__imperative = imperative
         self.__present_tense = present_tense

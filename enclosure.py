@@ -7,15 +7,11 @@ ID: 110462390
 Username: ivany005
 This is my own work as defined by the University's Academic Integrity Policy.
 """
-from datetime import time
 
 from animal import Animal
 from environmental_type import EnvironmentalType
 from log import Log
-from mammal import Mammal
-from reptile import Reptile
 from requires_cleaning import RequiresCleaning
-from severity import Severity
 
 
 class Enclosure(RequiresCleaning):
@@ -137,68 +133,3 @@ class Enclosure(RequiresCleaning):
         self.inhabitants.remove(animal)
         if len(self.inhabitants) == 0:
             self.__species = None
-
-
-aquatic1 = Enclosure("BlueLagoon", EnvironmentalType.AQUATIC, 5)
-desert1 = Enclosure("Dune", EnvironmentalType.DESERT, 10)
-
-cobra1 = Reptile("Shai-Hulud", "King Cobra", "Hiss", "Smooth", True, 4,
-                 habitat=EnvironmentalType.DESERT)
-cobra2 = Reptile("LittleMaker", "King Cobra", "Hiss", "Smooth", True, 0,
-                 habitat=EnvironmentalType.DESERT)
-rattlesnake = Reptile("Sally", "Horned Rattlesnake", "Hiss", "Keeled", True,
-                      4, habitat=EnvironmentalType.DESERT)
-desert_mouse = Mammal("Muad'Dib", "Brown Desert Mouse", "Squeak", "Brown", True,
-                      habitat=EnvironmentalType.DESERT)
-
-print(desert1)  # display empty
-
-# cannot add: wrong habitat
-try:
-    aquatic1.add_animal(cobra1)
-except ValueError as e:
-    print(f"{e}\n")
-
-desert1.add_animal(cobra1)
-print(desert1)  # snake added
-
-desert1.add_animal(cobra1)
-print(desert1)  # no changes because snake already exists
-
-desert1.add_animal(cobra2)
-print(desert1)  # snake added
-
-# cannot add: wrong species
-try:
-    desert1.add_animal(desert_mouse)
-except ValueError as e:
-    print(f"{e}\n")
-try:
-    desert1.add_animal(rattlesnake)
-except ValueError as e:
-    print(f"{e}\n")
-
-desert1.remove_animal(cobra2)
-print(desert1)  # snake removed
-
-# cannot remove: animal does not live in the enclosure anymore
-try:
-    desert1.remove_animal(cobra2)
-except AssertionError as e:
-    print(f"{e}\n")
-
-cobra1.receive_diagnosis("S34", "Dr.John", "Illness - food poisoning.", Severity.MODERATE,
-                         "Take antidote", [[time(9), "Take antidote"]])
-
-# cannot remove: animal is under treatment
-try:
-    desert1.remove_animal(cobra1)
-except ValueError as e:
-    print(f"{e}\n")
-
-cobra1.recover("S34", "Dr.John", "Full recovery of food poisoning.")
-desert1.remove_animal(cobra1)
-print(desert1)  # snake removed
-
-desert1.add_animal(desert_mouse)
-print(desert1)  # mouse able to be added as all snakes were removed.
