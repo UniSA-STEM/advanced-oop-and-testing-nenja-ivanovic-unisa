@@ -31,9 +31,9 @@ class Staff(ABC):
 
         self.__animal_assignments = []
         self.__enclosure_assignments = []
+        self.__special_tasks = Schedule(f"{self.__name} Special Task")
 
         self.__log = Log(f"{self.__name}_{self.id} General Activity")  # new Log to store records of general activities.
-        self.__ = Schedule(f"{self.__name}_{self.id} Dietary")  # create a new schedule to store daily feeding plan.
 
     @abstractmethod
     def __str__(self) -> str:
@@ -42,7 +42,7 @@ class Staff(ABC):
         for animal in self.animal_assignments:
             animals_string += f"\n   > {animal.name}_{animal.id}"
 
-        enclosures_string = f"\n > Assigned Enclosures: {len(self.animal_assignments)}"
+        enclosures_string = f"\n > Assigned Enclosures: {len(self.enclosure_assignments)}"
         for enclosure in self.enclosure_assignments:
             enclosures_string += f"\n   > {enclosure.name}_{enclosure.id}"
         return f"ID: {self.id} | NAME: {self.__name}" + animals_string + enclosures_string + "\n"
@@ -74,11 +74,17 @@ class Staff(ABC):
         """ Returns the Enclosures that the Staff member is responsible for."""
         return self.__enclosure_assignments
 
+    def get_special_tasks(self) -> Schedule:
+        """ Returns the Schedule containing special (non-routine) tasks that the Staff member is
+        responsible for doing."""
+        return self.__special_tasks
+
     name = property(get_name)
     id = property(get_id)
     log = property(get_log)
     animal_assignments = property(get_animal_assignments)
     enclosure_assignments = property(get_enclosure_assignments)
+    special_tasks = property(get_special_tasks)
 
     @abstractmethod
     def generate_schedule(self) -> Schedule:
