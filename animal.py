@@ -11,6 +11,7 @@ from datetime import datetime  # automatically handles formatting issues with da
 from datetime import time
 
 from action import Action
+from environmental_type import EnvironmentalType
 from has_health import HasHealth
 from log import Log
 from requires_cleaning import RequiresCleaning
@@ -20,11 +21,12 @@ from schedule import Schedule
 class Animal(RequiresCleaning, HasHealth):
     _next_id = 1  # unique identifier of the animal which is incremented by one each time an animal is created.
 
-    def __init__(self, name: str, species: str, age: int = 0, sound: str = None):
+    def __init__(self, name: str, species: str, habitat: EnvironmentalType, age: int = 0, sound: str = None):
         """
         Initialise new Animal instances.
         :param name: The name of the animal.
         :param species: The specific species name of the Animal.
+        :param habitat: The environmental type the animal lives in.
         :param age:  The age of the animal in years (default is 0).
         :param sound: The sound that the animal makes (if any; default is None).
         """
@@ -35,6 +37,10 @@ class Animal(RequiresCleaning, HasHealth):
         if age < 0:
             raise ValueError("Animal age must be positive.")
         self.__age = age
+
+        if not isinstance(habitat, EnvironmentalType):
+            raise TypeError("Animal habitat must be an EnvironmentalType enumeration.")
+        self.__habitat = habitat
 
         self.__id = "A" + str(Animal._next_id)  # A to represent 'Animal'
         Animal._next_id += 1
@@ -77,6 +83,10 @@ class Animal(RequiresCleaning, HasHealth):
         """Return a string representing the animal's species."""
         return self.__species
 
+    def get_habitat(self) -> EnvironmentalType:
+        """Return an enumeration representing the habitat the animal lives in."""
+        return self.__habitat
+
     def get_log(self) -> Log:
         """ Returns the log of the animal's activities."""
         return self.__log
@@ -91,6 +101,7 @@ class Animal(RequiresCleaning, HasHealth):
     species = property(get_species)
     log = property(get_log)
     diet = property(get_diet)
+    habitat = property(get_habitat)
 
     def become_older(self, at_datetime: datetime = datetime.now(), years: float = 1):
         """
