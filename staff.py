@@ -104,7 +104,7 @@ class Staff(ABC):
             if assignment not in self.enclosure_assignments:
                 self.enclosure_assignments.append(assignment)  # duplicates not allowed
         else:
-            raise TypeError(f"Staff members cannot be assigned to {assignment.__class__} objects.")
+            raise TypeError(f"Staff members cannot be assigned to {assignment.__class__.__name__} objects.")
 
         self.log.new({"DateTime": at_datetime,
                       "SubjectID": self.__id,
@@ -112,7 +112,7 @@ class Staff(ABC):
                       "ObjectID": assignment.id,
                       "ObjectName": assignment.name,
                       "Action": Action.ASSIGN,
-                      "Details": f"{assignment.__class__}"})
+                      "Details": f"{assignment.__class__.__name__}"})
 
     def unassign(self, assignment: Animal | Enclosure, at_datetime: datetime = datetime.now()):
         """
@@ -134,6 +134,6 @@ class Staff(ABC):
                       "ObjectID": assignment.id,
                       "ObjectName": assignment.name,
                       "Action": Action.UNASSIGN,
-                      "Details": f"{assignment.__class__}"})
+                      "Details": f"{assignment.__class__.__name__}"})
 
         return None
