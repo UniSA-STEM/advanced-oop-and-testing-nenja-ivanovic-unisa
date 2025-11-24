@@ -15,6 +15,7 @@ import pandas as pd
 from animal import Animal
 from enclosure import Enclosure
 from log import Log
+from medical_log import MedicalLog
 from schedule import Schedule
 from staff import Staff
 
@@ -95,7 +96,7 @@ class ZooSystem:
     enclosures = property(get_enclosures, set_enclosures)
     staff = property(get_staff, set_staff)
 
-    # adding, removing, moving and assignment ---------------------------------------------------------------
+    # adding, removing, moving and assignment -----------------------------------------------------------------
 
     def add_animal(self, animal: Animal) -> None:
         """
@@ -225,15 +226,16 @@ class ZooSystem:
         """
         species = [animal.species for animal in self.animals]
         species = list(set(species))  # remove duplicates
-        output = f"\nANIMALS BY SPECIES ({len(self.__animals)} total):"
+        output = f"----------------------------------------------------------------------------------------------\n" \
+                 f"ANIMALS BY SPECIES ({len(self.__animals)} total):\n"
 
         for name in species:
             animals = [animal for animal in self.animals if animal.species == name]
-            output += f"\n\n{species} ({len(animals)}):"
+            output += f"\n{name} ({len(animals)}):"
             for animal in animals:
                 output += f"\n - {animal.name}_{animal.id}"
             output += "\n"
-
+        output += "\n----------------------------------------------------------------------------------------------\n"
         return output
 
     def report_enclosure_status(self) -> str:
@@ -241,10 +243,12 @@ class ZooSystem:
         Generate a text report describing the status of each enclosure: environment, cleanliness, and occupancy.
         :return: Report of enclosure information as a string.
         """
-        output = "\nENCLOSURE STATUS REPORT:"
+        output = f"----------------------------------------------------------------------------------------------\n" \
+                 "ENCLOSURE STATUS REPORT:\n"
         for enclosure in self.__enclosures:
-            output += (str(enclosure) + "\n")
+            output += ("\n" + str(enclosure))
 
+        output += "\n----------------------------------------------------------------------------------------------\n"
         return output
 
     def report_animals_on_display(self) -> str:
@@ -253,10 +257,12 @@ class ZooSystem:
         :return: Report of animals not under treatment as a string.
         """
         display_animals = [a for a in self.__animals if not a.under_treatment]
-        output = f"\nANIMALS CURRENTLY ON DISPLAY ({len(display_animals)}):"
+        output = \
+            f"----------------------------------------------------------------------------------------------\n" \
+            f"ANIMALS CURRENTLY ON DISPLAY ({len(display_animals)}): \n"
         for animal in display_animals:
             output += f"\n - {animal.name}_{animal.id} ({animal.species})"
-        output += "\n"
+        output += "\n----------------------------------------------------------------------------------------------\n"
         return output
 
     def report_animal_medical_history(self, animal: Animal) -> str:
@@ -274,9 +280,12 @@ class ZooSystem:
         Generate a combined health report for all animals in the zoo.
         :return: A report of all zoo animals' medical logs combined as a string.
         """
-        animal_medical_log = Log("Combined Animal Medical")
-        for animal in self.__animals:
-            animal_medical_log.data = pd.concat([animal_medical_log.data, animal.medical_log.data])
+        animal_medical_log = MedicalLog("Combined Animal Medical")
+        frames = [animal.medical_log.data for animal in self.__animals if not animal.medical_log.data.empty]
+
+        if len(frames):
+            animal_medical_log.data = pd.concat(frames)
+
         return str(animal_medical_log)
 
     def report_zoo_daily_staff_schedules(self) -> str:
@@ -285,8 +294,16 @@ class ZooSystem:
         :return: A Schedule with all daily schedules of zoo staff combined as a String
         """
         staff_schedule = Schedule("Combined Staff Daily")
+
+        frames = []
         for member in self.__staff:
-            staff_schedule.data = pd.concat([staff_schedule.data, member.generate_schedule().data])
+            member_schedule = member.generate_schedule()
+            if not member_schedule.data.empty:
+                frames.append(member_schedule.data)
+
+        if len(frames) > 0:
+            staff_schedule.data = pd.concat(frames)
+
         return str(staff_schedule)
 
     def report_zoo_staff_activity(self) -> str:
@@ -295,8 +312,11 @@ class ZooSystem:
         :return: A log with all daily activity logs of zoo staff combined as a String
         """
         staff_log = Log("Combined Staff General Activity")
-        for member in self.__staff:
-            staff_log.data = pd.concat([staff_log.data, member.log.data])
+        frames = [member.log.data for member in self.__staff if not member.log.data.empty]
+
+        if len(frames) > 0:
+            staff_log.data = pd.concat(frames)
+
         return str(staff_log)
 
     def report_zoo_enclosure_maintenance(self) -> str:
@@ -305,6 +325,9 @@ class ZooSystem:
         :return: A log with all maintenance logs of zoo enclosures combined as a String
         """
         enclosure_log = Log("Combined Enclosure Maintenance")
-        for enclosure in self.__enclosures:
-            enclosure_log.data = pd.concat([enclosure_log.data, enclosure.log.data])
+        frames = [enclosure.log.data for enclosure in self.__enclosures if not enclosure.log.data.empty]
+
+        if len(frames) > 0:
+            enclosure_log.data = pd.concat(frames)
+
         return str(enclosure_log)
