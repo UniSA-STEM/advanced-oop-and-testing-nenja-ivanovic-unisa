@@ -13,10 +13,6 @@ import pandas as pd
 
 from action import Action
 from animal import Animal
-from enclosure import Enclosure
-from environmental_type import EnvironmentalType
-from mammal import Mammal
-from reptile import Reptile
 from schedule import Schedule
 from severity import Severity
 from staff import Staff
@@ -156,80 +152,3 @@ class Veterinarian(Staff):
                       "ObjectName": animal.name,
                       "Action": Action.DECLARE_RECOVERY,
                       "Details": f"log ref: {log_ref_num}"})
-
-
-staff1 = Veterinarian("Ethan")
-
-desert1 = Enclosure("Dune", EnvironmentalType.DESERT, 10)
-desert2 = Enclosure("CactusLand", EnvironmentalType.DESERT, 10)
-desert3 = Enclosure("DesertHideout", EnvironmentalType.DESERT, 10)
-
-cobra1 = Reptile("Shai-Hulud", "King Cobra", "Hiss", "Smooth", True,
-                 4, habitat=EnvironmentalType.DESERT)
-cobra2 = Reptile("LittleMaker", "King Cobra", "Hiss", "Smooth", True,
-                 0, habitat=EnvironmentalType.DESERT)
-rattlesnake = Reptile("Sally", "Horned Rattlesnake", "Hiss", "Keeled", True,
-                      4, habitat=EnvironmentalType.DESERT)
-desert_mouse = Mammal("Muad'Dib", "Brown Desert Mouse", "Squeak", "Brown", True,
-                      habitat=EnvironmentalType.DESERT)
-
-desert1.add_animal(cobra1)
-desert1.add_animal(cobra2)
-desert2.add_animal(rattlesnake)
-desert3.add_animal(desert_mouse)
-
-staff1.assign(desert1, datetime(2004, 11, 10))
-staff1.assign(desert2, datetime(2004, 11, 10))
-staff1.assign(desert3, datetime(2004, 11, 10))
-
-staff1.check_health(
-    desert_mouse,
-    "Behavioral assessment",
-    Severity.LOW,
-    datetime(2004, 11, 12, 10, 20)
-)
-staff1.diagnose(
-    desert_mouse,
-    "Psychological illness - anxiety",
-    Severity.LOW,
-    "Get 5 min of cuddles 2x per day.",
-    [[time(11), "5 min cuddles"], [time(19), "5 min cuddles"]],
-    datetime(2004, 11, 12, 10, 30)
-)
-staff1.special_tasks.new({"Time": time(22, 20),
-                          "SubjectID": staff1.id,
-                          "SubjectName": staff1.name,
-                          "ObjectID": desert_mouse.id,
-                          "ObjectName": desert_mouse.name,
-                          "Action": Action.CHECK_HEALTH,
-                          "Details": "Behavioural Review"}
-                         )
-print(staff1.generate_schedule())
-
-staff1.treat(
-    desert_mouse,
-    "5 min cuddles",
-    Severity.LOW,
-    datetime(2004, 11, 12, 11, )
-)
-staff1.treat(
-    desert_mouse,
-    "5 min cuddles",
-    Severity.LOW,
-    datetime(2004, 11, 12, 19)
-)
-staff1.check_health(
-    desert_mouse,
-    "Behavioral review.",
-    Severity.LOW,
-    datetime(2004, 11, 13, 22, 20)
-)
-staff1.declare_recovery(
-    desert_mouse,
-    "Anxiety cured.",
-    datetime(2004, 11, 13, 22, 35),
-)
-
-print(desert_mouse.medical_log)
-print(staff1.log)
-print(staff1)
