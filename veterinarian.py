@@ -65,19 +65,22 @@ class Veterinarian(Staff):
         :param severity: How urgent the checkup is represented as a Severity enum.
         :return: None
         """
-        if not isinstance(animal, Animal):
-            raise TypeError("Veterinarians can only perform a health check on Animals.")
+        try:
+            if not isinstance(animal, Animal):
+                raise TypeError("Veterinarians can only perform a health check on Animals.")
 
-        # record that the animal received a health check in its own logs (returns a ref number):
-        log_ref_num = animal.receive_health_check(self.id, self.name, details, severity, at_datetime)
+            # record that the animal received a health check in its own logs (returns a ref number):
+            log_ref_num = animal.receive_health_check(self.id, self.name, details, severity, at_datetime)
 
-        self.log.new({"DateTime": at_datetime,
-                      "SubjectID": self.id,
-                      "SubjectName": self.name,
-                      "ObjectID": animal.id,
-                      "ObjectName": animal.name,
-                      "Action": Action.CHECK_HEALTH,
-                      "Details": f"log ref: {log_ref_num}"})
+            self.log.new({"DateTime": at_datetime,
+                          "SubjectID": self.id,
+                          "SubjectName": self.name,
+                          "ObjectID": animal.id,
+                          "ObjectName": animal.name,
+                          "Action": Action.CHECK_HEALTH,
+                          "Details": f"log ref: {log_ref_num}"})
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def diagnose(self, animal: Animal, details: str, severity: Severity, treatment_desc: str,
                  treatment_list: list, at_datetime=datetime.now()):
@@ -92,21 +95,23 @@ class Veterinarian(Staff):
         :param at_datetime: The date and time at which the diagnosis was given (default is when the method is called).
         :return: None
         """
+        try:
+            if not isinstance(animal, Animal):
+                raise TypeError("Veterinarians can only diagnose Animals.")
 
-        if not isinstance(animal, Animal):
-            raise TypeError("Veterinarians can only diagnose Animals.")
+            # record that the animal received a diagnosis in its own logs (returns a ref number):
+            log_ref_num = animal.receive_diagnosis(self.id, self.name, details, severity, treatment_desc,
+                                                   treatment_list, at_datetime)
 
-        # record that the animal received a diagnosis in its own logs (returns a ref number):
-        log_ref_num = animal.receive_diagnosis(self.id, self.name, details, severity, treatment_desc,
-                                               treatment_list, at_datetime)
-
-        self.log.new({"DateTime": at_datetime,
-                      "SubjectID": self.id,
-                      "SubjectName": self.name,
-                      "ObjectID": animal.id,
-                      "ObjectName": animal.name,
-                      "Action": Action.DIAGNOSE,
-                      "Details": f"log ref: {log_ref_num}"})
+            self.log.new({"DateTime": at_datetime,
+                          "SubjectID": self.id,
+                          "SubjectName": self.name,
+                          "ObjectID": animal.id,
+                          "ObjectName": animal.name,
+                          "Action": Action.DIAGNOSE,
+                          "Details": f"log ref: {log_ref_num}"})
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def treat(self, animal: Animal, details: str, severity: Severity, at_datetime=datetime.now()):
         """
@@ -117,19 +122,22 @@ class Veterinarian(Staff):
         :param at_datetime: The date and time at which the treatment was given (default is when the method is called).
         :return: None
         """
-        if not isinstance(animal, Animal):
-            raise TypeError("Veterinarians can only treat Animals.")
+        try:
+            if not isinstance(animal, Animal):
+                raise TypeError("Veterinarians can only treat Animals.")
 
-        # record that the animal received a diagnosis in its own logs (returns a ref number):
-        log_ref_num = animal.receive_treatment(self.id, self.name, details, severity, at_datetime)
+            # record that the animal received a diagnosis in its own logs (returns a ref number):
+            log_ref_num = animal.receive_treatment(self.id, self.name, details, severity, at_datetime)
 
-        self.log.new({"DateTime": at_datetime,
-                      "SubjectID": self.id,
-                      "SubjectName": self.name,
-                      "ObjectID": animal.id,
-                      "ObjectName": animal.name,
-                      "Action": Action.TREAT,
-                      "Details": f"log ref: {log_ref_num}"})
+            self.log.new({"DateTime": at_datetime,
+                          "SubjectID": self.id,
+                          "SubjectName": self.name,
+                          "ObjectID": animal.id,
+                          "ObjectName": animal.name,
+                          "Action": Action.TREAT,
+                          "Details": f"log ref: {log_ref_num}"})
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def declare_recovery(self, animal: Animal, details: str, at_datetime=datetime.now()):
         """
@@ -139,16 +147,20 @@ class Veterinarian(Staff):
         :param at_datetime: The date and time at which the declaration was made (default is when the method is called).
         :return: None
         """
-        if not isinstance(animal, Animal):
-            raise TypeError("Veterinarians can only treat Animals")
+        try:
+            if not isinstance(animal, Animal):
+                raise TypeError("Veterinarians can only treat Animals")
 
-        # record that the animal received a diagnosis in its own logs (returns a ref number):
-        log_ref_num = animal.recover(self.id, self.name, details, at_datetime)
+            # record that the animal received a diagnosis in its own logs (returns a ref number):
+            log_ref_num = animal.recover(self.id, self.name, details, at_datetime)
 
-        self.log.new({"DateTime": at_datetime,
-                      "SubjectID": self.id,
-                      "SubjectName": self.name,
-                      "ObjectID": animal.id,
-                      "ObjectName": animal.name,
-                      "Action": Action.DECLARE_RECOVERY,
-                      "Details": f"log ref: {log_ref_num}"})
+            self.log.new({"DateTime": at_datetime,
+                          "SubjectID": self.id,
+                          "SubjectName": self.name,
+                          "ObjectID": animal.id,
+                          "ObjectName": animal.name,
+                          "Action": Action.DECLARE_RECOVERY,
+                          "Details": f"log ref: {log_ref_num}"})
+
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")

@@ -20,26 +20,38 @@ from schedule import Schedule
 class Animal(RequiresCleaning, HasHealth):
     _next_id = 1  # unique identifier of the animal which is incremented by one each time an animal is created.
 
-    def __init__(self, name: str, species: str, habitat: EnvironmentalType = EnvironmentalType.GRASS, age: int = 0,
-                 sound: str = None):
+    def __init__(self, name: str, species: str, sound: str, habitat: EnvironmentalType = EnvironmentalType.GRASS,
+                 age: int = 0):
         """
         Initialise new Animal instances.
         :param name: The name of the animal.
         :param species: The specific species name of the Animal.
         :param habitat: The environmental type the animal lives in (default is GRASS).
         :param age:  The age of the animal in years (default is 0).
-        :param sound: The sound that the animal makes (if any; default is None).
+        :param sound: The sound that the animal makes
         """
         self.__name = name
         self.__species = species
         self.__sound = sound
 
-        if age < 0:
-            raise ValueError("Animal age must be positive.")
+        try:
+            if age >= 0:
+                raise ValueError
+        except ValueError:
+            age = abs(age)  # assume age provided was meant to be positive
+            print(f"[WARNING] Provided animal age was negative, so absolute value was used ({age} years).\n")
+        except TypeError:
+            age = 0  # revert to default
+            print(f"[WARNING] Provided animal age was not numeric, so default value of 0 years was assumed.\n")
         self.__age = age
 
-        if not isinstance(habitat, EnvironmentalType):
-            raise TypeError("Animal habitat must be an EnvironmentalType enumeration.")
+        try:
+            if not isinstance(habitat, EnvironmentalType):
+                raise TypeError("Animal habitat must be an EnvironmentalType enumeration.")
+        except TypeError:
+            habitat = EnvironmentalType.GRASS  # revert to default
+            print(f"[WARNING] Provided animal age was not an EnvironmentalType, so default value "
+                  f"of EnvironmentalType.GRASS years was assumed.\n")
         self.__habitat = habitat
 
         self.__id = "A" + str(Animal._next_id)  # A to represent 'Animal'
@@ -110,10 +122,16 @@ class Animal(RequiresCleaning, HasHealth):
         :param at_datetime: The date and time at which the animal got older (default is when the method is called).
         :return: None
         """
-        if not isinstance(years, float | int):
-            raise TypeError("Number of years must be a numeric value.")
-        if years <= 0:
-            raise ValueError("The number of years to age must be greater than zero.")
+        try:
+            if years >= 0:
+                raise ValueError
+        except ValueError:
+            years = abs(years)  # assume years provided was meant to be positive
+            print(f"[WARNING] Provided years to age is negative, so absolute value was used ({years} years).\n")
+        except TypeError:
+            years = 1  # revert to default
+            print(f"[WARNING] Provided number of years to age is not numeric, so default value of "
+                  f"1 year was assumed.\n")
 
         self.__age += years
         self.log.new({"DateTime": at_datetime,

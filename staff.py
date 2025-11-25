@@ -26,7 +26,7 @@ class Staff(ABC):
         """
         self.__name = name
 
-        self.__id = "S" + str(Staff._next_id)  # S to represent 'Staff".
+        self.__id = "S" + str(Staff._next_id)  # S to represent "Staff".
         Staff._next_id += 1
 
         self.__animal_assignments = []
@@ -89,6 +89,7 @@ class Staff(ABC):
     @abstractmethod
     def generate_schedule(self) -> Schedule:
         """Return the full daily schedule of responsibilities of the Staff member"""
+        pass
 
     def assign(self, assignment: Animal | Enclosure, at_datetime: datetime = datetime.now()):
         """
@@ -97,22 +98,25 @@ class Staff(ABC):
         :param assignment: The object requiring actions to assign to the Staff.
         :return: None
         """
-        if isinstance(assignment, Animal):
-            if assignment not in self.animal_assignments:  # duplicates not allowed
-                self.animal_assignments.append(assignment)
-        elif isinstance(assignment, Enclosure):
-            if assignment not in self.enclosure_assignments:
-                self.enclosure_assignments.append(assignment)  # duplicates not allowed
-        else:
-            raise TypeError(f"Staff members cannot be assigned to {assignment.__class__.__name__} objects.")
+        try:
+            if isinstance(assignment, Animal):
+                if assignment not in self.animal_assignments:  # duplicates not allowed
+                    self.animal_assignments.append(assignment)
+            elif isinstance(assignment, Enclosure):
+                if assignment not in self.enclosure_assignments:  # duplicates not allowed
+                    self.enclosure_assignments.append(assignment)
+            else:
+                raise TypeError(f"Staff members cannot be assigned to {assignment.__class__.__name__} objects.")
 
-        self.log.new({"DateTime": at_datetime,
-                      "SubjectID": self.__id,
-                      "SubjectName": self.__name,
-                      "ObjectID": assignment.id,
-                      "ObjectName": assignment.name,
-                      "Action": Action.ASSIGN,
-                      "Details": f"{assignment.__class__.__name__}"})
+            self.log.new({"DateTime": at_datetime,
+                          "SubjectID": self.__id,
+                          "SubjectName": self.__name,
+                          "ObjectID": assignment.id,
+                          "ObjectName": assignment.name,
+                          "Action": Action.ASSIGN,
+                          "Details": f"{assignment.__class__.__name__}"})
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def unassign(self, assignment: Animal | Enclosure, at_datetime: datetime = datetime.now()):
         """

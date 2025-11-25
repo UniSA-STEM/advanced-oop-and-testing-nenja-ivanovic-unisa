@@ -12,7 +12,6 @@ from datetime import datetime
 import pandas as pd
 from pandas import DataFrame
 
-from action import Action
 from data_record import DataRecord
 
 
@@ -28,7 +27,7 @@ class Log(DataRecord):
         cols_to_add = DataFrame({"DateTime": pd.Series(dtype="object")})  # datetime object
         self.data = pd.concat([self.data, cols_to_add])
 
-    def new(self, new_row: dict) -> int:
+    def new(self, new_row: dict) -> int | None:
         """
         Add a new row of information to the log.
 
@@ -43,15 +42,30 @@ class Log(DataRecord):
             - 'Details' (str): Further description of the action.
         :return: The reference number of the new row added.
         """
+        try:
+            if not isinstance(new_row, dict):
+                raise TypeError("The new row of data must be provided as a Dictionary object.")
+            assert set(self.data.columns.values) == set(new_row.keys()), (
+                f"The dictionary keys of the new row must match the existing columns of the Log data attribute.")
+            if not isinstance(new_row.get("DateTime"),
+                              datetime):  # the datetime class will internally handle formatting issues.
+                raise TypeError("The Datetime of a new log record must be a datetime object.")
+            return super().new(new_row)
 
-        if not isinstance(new_row.get("DateTime"),
-                          datetime):  # the datetime class will internally handle formatting issues.
-            raise TypeError("at_datetime must be a datetime object.")
+        except AssertionError as e:
+            print(f"[ERROR] {e}\nNo changes made to {self.name} Log.\n")
+            return None
 
-        if not isinstance(new_row.get("Action"), Action):
-            raise TypeError("The logged action must be from the Action enumeration.")
-
-        return super().new(new_row)
+        except TypeError as e:
+            match str(e):
+                case "The new row of data must be provided as a Dictionary object.":
+                    print(f"[ERROR] {e} No changes made to {self.name} Log.\n")
+                    return None
+                case ("The at_datetime of a new log record must be a datetime object."):
+                    new_row.update({"DateTime": datetime.now()})
+                    print(f"[WARNING] {e} Default DateTime (now) has been assumed for the new record added to"
+                          f" {self.name} Log.\n")
+                    return super().new(new_row)
 
     def __str__(self) -> str:
         """
@@ -64,11 +78,13 @@ class Log(DataRecord):
             output += "\nNo data recorded."
         else:
             output += "\n"
-            self.data.sort_values(by=['DateTime'], ascending=True, inplace=True)
+            self.data.sort_values(by=['DateTime'], ascending=True, inplace=True)  # keep original unique record ref nums
+
             # iterate through log records and add each as a formatted line:
             for row in self.data.itertuples():
                 subject_desc = f"{row.SubjectName}_{row.SubjectID}"
                 object_desc = f"{row.ObjectName}_{row.ObjectID}"
+
                 # if the subject of the scheduled action only relates to the performer, do not describe
                 # the ObjectName and ObjectID of the event:
                 object_desc = "" if object_desc == subject_desc else object_desc + " "

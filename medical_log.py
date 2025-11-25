@@ -7,7 +7,6 @@ ID: 110462390
 Username: ivany005
 This is my own work as defined by the University's Academic Integrity Policy.
 """
-from datetime import datetime
 
 import pandas as pd
 from pandas import DataFrame
@@ -31,7 +30,7 @@ class MedicalLog(Log):
             "Treatment": pd.Series(dtype="string")})
         self.data = pd.concat([self.data, cols_to_add])
 
-    def new(self, new_row: dict) -> int:
+    def new(self, new_row: dict) -> int | None:
         """
         Add a new row of information to the log.
 
@@ -49,14 +48,21 @@ class MedicalLog(Log):
         :return: int
         """
 
-        if not isinstance(new_row.get("DateTime"),
-                          datetime):  # the datetime class will internally handle formatting issues.
-            raise TypeError("at_datetime must be a datetime or time object.")
+        try:
+            if not isinstance(new_row, dict):
+                raise TypeError("The new row of data must be provided as a Dictionary object.")
+            assert set(self.data.columns.values) == set(new_row.keys()), (
+                f"The dictionary keys of the new row must match the existing columns of the Medical Log data attribute.")
+            if not isinstance(new_row.get("Severity"), Severity):
+                raise TypeError("The logged record severity must be from the Severity enumeration.")
+            return super().new(new_row)
 
-        if not isinstance(new_row.get("Severity"), Severity):
-            raise TypeError("The logged record severity must be from the Severity enumeration.")
-
-        return super().new(new_row)
+        except TypeError as e:
+            print(f"[ERROR] {e} No changes made to {self.name} Log.\n")
+            return None
+        except AssertionError as e:
+            print(f"[ERROR] {e}\nNo changes made to {self.name} Log\n.")
+            return None
 
     def __str__(self) -> str:
         """
@@ -68,7 +74,7 @@ class MedicalLog(Log):
         if len(self.data) == 0:
             output += "\nNo medical history recorded."
         else:
-            self.data.sort_values(by=['DateTime'], ascending=True, inplace=True)
+            self.data.sort_values(by=['DateTime'], ascending=True, inplace=True)  # keep original unique record ref nums
             # iterate through log records and add each as a formatted line:
             for row in self.data.itertuples():
                 subject_desc = f"{row.SubjectName}_{row.SubjectID}"

@@ -61,19 +61,24 @@ class Zookeeper(Staff):
         :param quantity: Quantity of the food given.
         :return: None
         """
-        if not isinstance(animal, Animal):
-            raise TypeError("Zookeepers can only feed Animal objects.")
+        try:
+            if not isinstance(animal, Animal):
+                raise TypeError("Zookeepers can only feed Animal objects.")
 
-        self.log.new({"DateTime": at_datetime,
-                      "SubjectID": self.id,
-                      "SubjectName": self.name,
-                      "ObjectID": animal.id,
-                      "ObjectName": animal.name,
-                      "Action": Action.FEED,
-                      "Details": f"{quantity} {food}"})
+            self.log.new({"DateTime": at_datetime,
+                          "SubjectID": self.id,
+                          "SubjectName": self.name,
+                          "ObjectID": animal.id,
+                          "ObjectName": animal.name,
+                          "Action": Action.FEED,
+                          "Details": f"{quantity} {food}"})
 
-        # record that the object ate in its own logs:
-        animal.eat(food, quantity, at_datetime)
+            # record that the object ate in its own logs:
+            animal.eat(food, quantity, at_datetime)
+
+
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def clean(self, object_cleaned: RequiresCleaning, at_datetime: datetime = datetime.now(),
               details: str = "standard"):
@@ -84,16 +89,19 @@ class Zookeeper(Staff):
         :param details: The details of the cleaning (default is "standard")
         :return: None
         """
-        if not isinstance(object_cleaned, RequiresCleaning):
-            raise TypeError("Zookeepers can only clean instances of the RequiresCleaning class.")
+        try:
+            if not isinstance(object_cleaned, RequiresCleaning):
+                raise TypeError("Zookeepers can only clean instances of the RequiresCleaning class.")
 
-        self.log.new({"DateTime": at_datetime,
-                      "SubjectID": self.id,
-                      "SubjectName": self.name,
-                      "ObjectID": object_cleaned.get_id(),
-                      "ObjectName": object_cleaned.get_name(),
-                      "Action": Action.CLEAN,
-                      "Details": f"{details}"})
+            self.log.new({"DateTime": at_datetime,
+                          "SubjectID": self.id,
+                          "SubjectName": self.name,
+                          "ObjectID": object_cleaned.get_id(),
+                          "ObjectName": object_cleaned.get_name(),
+                          "Action": Action.CLEAN,
+                          "Details": f"{details}"})
 
-        # record that the object was cleaned in its own logs:
-        object_cleaned.receive_cleaning(self.id, self.name, at_datetime, 1)
+            # record that the object was cleaned in its own logs:
+            object_cleaned.receive_cleaning(self.id, self.name, at_datetime, 1)
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")

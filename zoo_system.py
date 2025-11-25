@@ -67,34 +67,10 @@ class ZooSystem:
         """ Returns the Staff members that work in the zoo."""
         return self.__staff
 
-    def set_name(self, name: str) -> None:
-        """Set the Zoo's name."""
-        if not isinstance(name, str):
-            raise TypeError("Zoo name must be a string.")
-        self.__name = name
-
-    def set_animals(self, animals: list[Animal]) -> None:
-        """Set the Animals that live in the zoo."""
-        if not all(isinstance(a, Animal) for a in animals):
-            raise TypeError("animals must be a list of Animal objects.")
-        self.__animals = animals
-
-    def set_enclosures(self, enclosures: list[Enclosure]) -> None:
-        """Set the Enclosures that exist in the zoo."""
-        if not all(isinstance(e, Enclosure) for e in enclosures):
-            raise TypeError("enclosures must be a list of Enclosure objects.")
-        self.__enclosures = enclosures
-
-    def set_staff(self, staff: list[Staff]) -> None:
-        """Set the Staff members that work in the zoo."""
-        if not all(isinstance(s, Staff) for s in staff):
-            raise TypeError("staff must be a list of Staff objects.")
-        self.__staff = staff
-
-    name = property(get_name, set_name)
-    animals = property(get_animals, set_animals)
-    enclosures = property(get_enclosures, set_enclosures)
-    staff = property(get_staff, set_staff)
+    name = property(get_name)
+    animals = property(get_animals)
+    enclosures = property(get_enclosures)
+    staff = property(get_staff)
 
     # adding, removing, moving and assignment -----------------------------------------------------------------
 
@@ -104,10 +80,13 @@ class ZooSystem:
         :param animal: The Animal to add to the zoo.
         :return: None
         """
-        if not isinstance(animal, Animal):
-            raise TypeError("Only Animal instances can be added to the zoo.")
-        if animal not in self.__animals:
-            self.__animals.append(animal)
+        try:
+            if not isinstance(animal, Animal):
+                raise TypeError("Only Animal instances can be added to the zoo animals.")
+            if animal not in self.__animals:
+                self.__animals.append(animal)
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def remove_animal(self, animal: Animal) -> None:
         """
@@ -129,12 +108,15 @@ class ZooSystem:
         :param enclosure: The enclosure to remove from the zoo (must be empty).
         :return: None
         """
-        if not isinstance(enclosure, Enclosure):
-            raise TypeError("Only Enclosure instances can be added to the zoo.")
-        if len(enclosure.inhabitants) > 0:
-            raise ValueError(f"{enclosure.name}_{enclosure.id} cannot be added as it is not empty.")
-        if enclosure not in self.__enclosures:
-            self.__enclosures.append(enclosure)
+        try:
+            if not isinstance(enclosure, Enclosure):
+                raise TypeError("Only Enclosure instances can be added to the zoo enclosures.")
+            if len(enclosure.inhabitants) > 0:
+                raise ValueError(f"{enclosure.name}_{enclosure.id} cannot be added as it is not empty.")
+            if enclosure not in self.__enclosures:
+                self.__enclosures.append(enclosure)
+        except (TypeError, ValueError) as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def remove_enclosure(self, enclosure: Enclosure) -> None:
         """
@@ -142,32 +124,41 @@ class ZooSystem:
         :param enclosure: The enclosure to remove from the zoo (must be empty).
         :return: None
         """
-        if not isinstance(enclosure, Enclosure):
-            raise TypeError("Only Enclosure instances can be removed from the zoo.")
-        if len(enclosure.inhabitants) > 0:
-            raise ValueError(f"{enclosure.name}_{enclosure.id} cannot be removed as it is not empty.")
-        if enclosure in self.__enclosures:
-            self.__enclosures.remove(enclosure)
+        try:
+            if not isinstance(enclosure, Enclosure):
+                raise TypeError("Only Enclosure instances can be removed from the zoo enclosures.")
+            if len(enclosure.inhabitants) > 0:
+                raise ValueError(f"{enclosure.name}_{enclosure.id} cannot be removed as it is not empty.")
+            if enclosure in self.__enclosures:
+                self.__enclosures.remove(enclosure)
+        except (TypeError, ValueError) as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def add_staff_member(self, staff_member: Staff) -> None:
         """Add a Staff member to the zoo.
         :param staff_member: The staff member to add to the zoo.
         """
-        if not isinstance(staff_member, Staff):
-            raise TypeError("Only Staff instances can be added to the zoo.")
-        if staff_member not in self.__staff:
-            self.__staff.append(staff_member)
+        try:
+            if not isinstance(staff_member, Staff):
+                raise TypeError("Only Staff instances can be added to the zoo staff.")
+            if staff_member not in self.__staff:
+                self.__staff.append(staff_member)
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def remove_staff_member(self, staff_member: Staff) -> None:
         """
         Remove a Staff member from the zoo.
         :param staff_member: The staff member to remove from the zoo.
         """
-        if not isinstance(staff_member, Staff):
-            raise TypeError("Only Staff instances can be removed from the zoo.")
+        try:
+            if not isinstance(staff_member, Staff):
+                raise TypeError("Only Staff instances can be removed from the zoo staff.")
 
-        if staff_member in self.__staff:
-            self.__staff.remove(staff_member)
+            if staff_member in self.__staff:
+                self.__staff.remove(staff_member)
+        except TypeError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def assign_staff_to_enclosure(self, staff_member: Staff, enclosure: Enclosure,
                                   at_datetime: datetime) -> None:
@@ -178,12 +169,15 @@ class ZooSystem:
         :param at_datetime: The date and time at which the assignment was made (default is when method is called).
         :return: None
         """
-        if staff_member not in self.__staff:
-            raise ValueError("Staff member must belong to this zoo before assignment.")
-        if enclosure not in self.__enclosures:
-            raise ValueError("Enclosure must belong to this zoo before assignment.")
+        try:
+            if staff_member not in self.__staff:
+                raise ValueError("Staff member must belong to this zoo before assignment.")
+            if enclosure not in self.__enclosures:
+                raise ValueError("Enclosure must belong to this zoo before assignment.")
 
-        staff_member.assign(enclosure, at_datetime)
+            staff_member.assign(enclosure, at_datetime)
+        except ValueError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def assign_animal_to_enclosure(self, animal: Animal, enclosure: Enclosure) -> None:
         """
@@ -192,12 +186,15 @@ class ZooSystem:
         :param enclosure: The enclosure the animal is being assigned to.
         :return: None
         """
-        if animal not in self.__animals:
-            raise ValueError(f"Animal must belong to {self.name} before it can be assigned to an enclosure.")
-        if enclosure not in self.__enclosures:
-            raise ValueError(f"Enclosure must belong to {self.name} before it can receive animals.")
+        try:
+            if animal not in self.__animals:
+                raise ValueError(f"Animal must belong to {self.name} before it can be assigned to an enclosure.")
+            if enclosure not in self.__enclosures:
+                raise ValueError(f"Enclosure must belong to {self.name} before it can receive animals.")
+            enclosure.add_animal(animal)  # checks that animal is not under treatment internally
 
-        enclosure.add_animal(animal)  # checks that animal is not under treatment internally
+        except ValueError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def move_animal(self, animal: Animal, from_enclosure: Enclosure, to_enclosure: Enclosure) -> None:
         """
@@ -208,14 +205,19 @@ class ZooSystem:
         :param to_enclosure: Where the animal is to be relocated.
         :return: None
         """
-        if from_enclosure not in self.__enclosures or to_enclosure not in self.__enclosures:
-            raise ValueError("Both enclosures must belong to this zoo.")
+        try:
+            if from_enclosure not in self.__enclosures or to_enclosure not in self.__enclosures:
+                raise ValueError("Both enclosures must belong to this zoo.")
 
-        if animal not in from_enclosure.inhabitants:
-            raise ValueError(f"{animal.name}_{animal.id} does not live in {from_enclosure.name}_{from_enclosure.id}.")
+            if animal not in from_enclosure.inhabitants:
+                raise ValueError(
+                    f"{animal.name}_{animal.id} does not live in {from_enclosure.name}_{from_enclosure.id}.")
 
-        from_enclosure.remove_animal(animal)
-        to_enclosure.add_animal(animal)
+            from_enclosure.remove_animal(animal)
+            to_enclosure.add_animal(animal)
+
+        except ValueError as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     # reporting  ------------------------------------------------------------------------------------------------
 
@@ -226,8 +228,8 @@ class ZooSystem:
         """
         species = [animal.species for animal in self.animals]
         species = list(set(species))  # remove duplicates
-        output = f"----------------------------------------------------------------------------------------------\n" \
-                 f"ANIMALS BY SPECIES ({len(self.__animals)} total):\n"
+        output = (f"----------------------------------------------------------------------------------------------\n"
+                  f"ANIMALS BY SPECIES ({len(self.__animals)} total):\n")
 
         for name in species:
             animals = [animal for animal in self.animals if animal.species == name]
@@ -257,9 +259,9 @@ class ZooSystem:
         :return: Report of animals not under treatment as a string.
         """
         display_animals = [a for a in self.__animals if not a.under_treatment]
-        output = \
-            f"----------------------------------------------------------------------------------------------\n" \
-            f"ANIMALS CURRENTLY ON DISPLAY ({len(display_animals)}): \n"
+        output = (
+            f"----------------------------------------------------------------------------------------------\n"
+            f"ANIMALS CURRENTLY ON DISPLAY ({len(display_animals)}): \n")
         for animal in display_animals:
             output += f"\n - {animal.name}_{animal.id} ({animal.species})"
         output += "\n----------------------------------------------------------------------------------------------\n"
@@ -281,10 +283,10 @@ class ZooSystem:
         :return: A report of all zoo animals' medical logs combined as a string.
         """
         animal_medical_log = MedicalLog("Combined Animal Medical")
-        frames = [animal.medical_log.data for animal in self.__animals if not animal.medical_log.data.empty]
+        medical_logs = [animal.medical_log.data for animal in self.__animals if not animal.medical_log.data.empty]
 
-        if len(frames):
-            animal_medical_log.data = pd.concat(frames)
+        if len(medical_logs):
+            animal_medical_log.data = pd.concat(medical_logs)
 
         return str(animal_medical_log)
 
@@ -295,14 +297,14 @@ class ZooSystem:
         """
         staff_schedule = Schedule("Combined Staff Daily")
 
-        frames = []
+        daily_schedules = []
         for member in self.__staff:
             member_schedule = member.generate_schedule()
             if not member_schedule.data.empty:
-                frames.append(member_schedule.data)
+                daily_schedules.append(member_schedule.data)
 
-        if len(frames) > 0:
-            staff_schedule.data = pd.concat(frames)
+        if len(daily_schedules) > 0:
+            staff_schedule.data = pd.concat(daily_schedules)
 
         return str(staff_schedule)
 
@@ -312,10 +314,10 @@ class ZooSystem:
         :return: A log with all daily activity logs of zoo staff combined as a String
         """
         staff_log = Log("Combined Staff General Activity")
-        frames = [member.log.data for member in self.__staff if not member.log.data.empty]
+        activity_logs = [member.log.data for member in self.__staff if not member.log.data.empty]
 
-        if len(frames) > 0:
-            staff_log.data = pd.concat(frames)
+        if len(activity_logs) > 0:
+            staff_log.data = pd.concat(activity_logs)
 
         return str(staff_log)
 
@@ -325,9 +327,9 @@ class ZooSystem:
         :return: A log with all maintenance logs of zoo enclosures combined as a String
         """
         enclosure_log = Log("Combined Enclosure Maintenance")
-        frames = [enclosure.log.data for enclosure in self.__enclosures if not enclosure.log.data.empty]
+        maintenance_logs = [enclosure.log.data for enclosure in self.__enclosures if not enclosure.log.data.empty]
 
-        if len(frames) > 0:
-            enclosure_log.data = pd.concat(frames)
+        if len(maintenance_logs) > 0:
+            enclosure_log.data = pd.concat(maintenance_logs)
 
         return str(enclosure_log)

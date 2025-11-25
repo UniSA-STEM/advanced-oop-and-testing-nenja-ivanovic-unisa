@@ -26,7 +26,7 @@ class Severity(Enum):
         return self.__description
 
     def get_level(self) -> int:
-        """Returns an integer that represents the severity level numerically (min=1, max=5).."""
+        """Returns an integer that represents the severity level numerically (min=1, max=5)."""
         return self.__level
 
     description = property(get_description)
@@ -38,16 +38,21 @@ class Severity(Enum):
         :param num_levels: The number of levels to go up.
         :return: Severity
         """
-        current_level = self.level
+        try:
+            current_level = self.level
+            lookup_level = current_level + int(num_levels)  # convert to int if float was provided.
+            if num_levels < 0:  # level is decreasing
+                min_possible_level = min([severity.level for severity in Severity])
+                lookup_level = max(lookup_level, min_possible_level)  # ensure level to look up is not lower than min
+            if num_levels < 0:  # level is decreasing
+                max_possible_level = max([severity.level for severity in Severity])
+                lookup_level = min(lookup_level, max_possible_level)  # ensure level to look up is not higher than max
 
-        lookup_level = current_level + int(num_levels)  # convert to int if float was provided.
-        if num_levels < 0:  # level is decreasing
-            min_possible_level = min([severity.level for severity in Severity])
-            lookup_level = max(lookup_level, min_possible_level)  # ensure level to look up is not lower than min
-        if num_levels < 0:  # level is decreasing
-            max_possible_level = max([severity.level for severity in Severity])
-            lookup_level = min(lookup_level, max_possible_level)  # ensure level to look up is not higher than max
+            # get first result if multiple matches:
+            new_severity = [severity for severity in Severity if severity.level == lookup_level][0]
+            return new_severity
 
-        # get first result if multiple matches:
-        new_severity = [severity for severity in Severity if severity.level == lookup_level][0]
-        return new_severity
+        except TypeError:
+            print("[ERROR] Could not determine change in Severity as the number of levels to "
+                  "change provided is not numeric.\n")
+            return self

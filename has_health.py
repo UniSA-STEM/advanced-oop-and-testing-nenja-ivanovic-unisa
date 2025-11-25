@@ -40,10 +40,6 @@ class HasHealth(ABC):
         """ Returns the object's daily medical treatment schedule."""
         return self.__treatments
 
-    under_treatment = property(get_under_treatment)
-    medical_log = property(get_medical_log)
-    treatments = property(get_treatments)
-
     @abstractmethod
     def get_name(self) -> str:
         """Return a string representing the object's name."""
@@ -56,6 +52,13 @@ class HasHealth(ABC):
     def get_log(self) -> Log:
         """ Returns the log of the object's activities."""
 
+    under_treatment = property(get_under_treatment)
+    medical_log = property(get_medical_log)
+    treatments = property(get_treatments)
+    name = property(get_name)
+    id = property(get_id)
+    log = property(get_log)
+
     def schedule_treatments(self, treatments: list):
         """
         Add one or more treatments to the object's daily treatment schedule.
@@ -65,16 +68,16 @@ class HasHealth(ABC):
         """
         for treatment in treatments:
             self.__treatments.new({"Time": treatment[0],
-                                   "SubjectID": self.get_id(),
-                                   "SubjectName": self.get_name(),
-                                   "ObjectID": self.get_id(),
-                                   "ObjectName": self.get_name(),
+                                   "SubjectID": self.id,
+                                   "SubjectName": self.name,
+                                   "ObjectID": self.id,
+                                   "ObjectName": self.name,
                                    "Action": Action.RECEIVE_TREATMENT,
                                    "Details": treatment[1],
                                    })
 
     def receive_health_check(self, doctor_id: str, doctor_name: str, details: str, severity: Severity,
-                             at_datetime=datetime.now()) -> int:
+                             at_datetime=datetime.now()) -> int | None:
         """
         Log that the object received a health check.
         :param severity: How urgent the checkup is represented as a Severity enum.
@@ -84,16 +87,23 @@ class HasHealth(ABC):
         :param at_datetime: The date and time at which the checkup occurred (default is when the method is called).
         :return: The reference number of the new row added.
         """
-        return self.medical_log.new({"DateTime": at_datetime,
-                                     "SubjectID": self.get_id(),
-                                     "SubjectName": self.get_name(),
-                                     "ObjectID": doctor_id,
-                                     "ObjectName": doctor_name,
-                                     "Action": Action.RECEIVE_HEALTH_CHECK,
-                                     "Details": f"{details}",
-                                     "Severity": severity,
-                                     "Treatment": "NA"  # treatment should only be described when a diagnosis is made.
-                                     })
+        try:
+            assert doctor_id[0] == "S", "Only zoo staff can conduct health checkups at the zoo."
+
+            return self.medical_log.new({"DateTime": at_datetime,
+                                         "SubjectID": self.id,
+                                         "SubjectName": self.name,
+                                         "ObjectID": doctor_id,
+                                         "ObjectName": doctor_name,
+                                         "Action": Action.RECEIVE_HEALTH_CHECK,
+                                         "Details": f"{details}",
+                                         "Severity": severity,
+                                         "Treatment": "NA"
+                                         # treatment should only be described when a diagnosis is made.
+                                         })
+        except AssertionError as e:
+            print(f"[ERROR] {e} Event not added to {self.medical_log.name} Log.\n")
+            return None
 
     def receive_diagnosis(self, doctor_id: str, doctor_name: str, details: str, severity: Severity, treatment_desc: str,
                           treatment_list: list, at_datetime=datetime.now()):
@@ -110,22 +120,28 @@ class HasHealth(ABC):
         :param at_datetime: The date and time at which the diagnosis was given (default is when the method is called).
         :return: The reference number of the new row added.
         """
-        self.schedule_treatments(treatment_list)
-        self.__under_treatment = True
+        try:
+            assert doctor_id[0] == "S", "Only zoo staff can give diagnoses at the zoo."
 
-        return self.medical_log.new({"DateTime": at_datetime,
-                                     "SubjectID": self.get_id(),
-                                     "SubjectName": self.get_name(),
-                                     "ObjectID": doctor_id,
-                                     "ObjectName": doctor_name,
-                                     "Action": Action.RECEIVE_DIAGNOSIS,
-                                     "Details": f"{details}",
-                                     "Severity": severity,
-                                     "Treatment": f"{treatment_desc}"
-                                     })
+            self.schedule_treatments(treatment_list)
+            self.__under_treatment = True
+
+            return self.medical_log.new({"DateTime": at_datetime,
+                                         "SubjectID": self.id,
+                                         "SubjectName": self.name,
+                                         "ObjectID": doctor_id,
+                                         "ObjectName": doctor_name,
+                                         "Action": Action.RECEIVE_DIAGNOSIS,
+                                         "Details": f"{details}",
+                                         "Severity": severity,
+                                         "Treatment": f"{treatment_desc}"
+                                         })
+        except AssertionError as e:
+            print(f"[ERROR] {e} Event not added to {self.medical_log.name} Log.\n")
+            return None
 
     def receive_treatment(self, treater_id: str, treater_name: str, details: str, severity: Severity,
-                          at_datetime=datetime.now()) -> int:
+                          at_datetime=datetime.now()) -> int | None:
         """
         Log that the object received a treatment.
         :param severity: How urgent the treatment was represented as a Severity enum.
@@ -135,18 +151,25 @@ class HasHealth(ABC):
         :param at_datetime: The date and time at which the treatment was given (default is when the method is called).
         :return: The reference number of the new row added.
         """
-        return self.medical_log.new({"DateTime": at_datetime,
-                                     "SubjectID": self.get_id(),
-                                     "SubjectName": self.get_name(),
-                                     "ObjectID": treater_id,
-                                     "ObjectName": treater_name,
-                                     "Action": Action.RECEIVE_TREATMENT,
-                                     "Details": f"{details}",
-                                     "Severity": severity,
-                                     "Treatment": "NA"  # treatment should only be described when a diagnosis is made.
-                                     })
+        try:
+            assert treater_id[0] == "S", "Only zoo staff can administer treatments at the zoo."
 
-    def recover(self, doctor_id: str, doctor_name: str, details: str, at_datetime=datetime.now()) -> int:
+            return self.medical_log.new({"DateTime": at_datetime,
+                                         "SubjectID": self.id,
+                                         "SubjectName": self.name,
+                                         "ObjectID": treater_id,
+                                         "ObjectName": treater_name,
+                                         "Action": Action.RECEIVE_TREATMENT,
+                                         "Details": f"{details}",
+                                         "Severity": severity,
+                                         "Treatment": "NA"
+                                         # treatment should only be described when a diagnosis is made.
+                                         })
+        except AssertionError as e:
+            print(f"[ERROR] {e} Event not added to {self.medical_log.name} Log.\n")
+            return None
+
+    def recover(self, doctor_id: str, doctor_name: str, details: str, at_datetime=datetime.now()) -> int | None:
         """
         Log that the object has been declared recovered, clear scheduled treatments and change under_treatment status.
         :param details: Any further details of the recovery.
@@ -155,16 +178,23 @@ class HasHealth(ABC):
         :param at_datetime: The date and time at which the declaration was given (default is when the method is called).
         :return: The reference number of the new row added.
         """
-        self.__under_treatment = False
-        self.treatments.remove()  # remove all treatments
+        try:
+            assert doctor_id[0] == "S", "Only zoo staff can declare recoveries at the zoo."
 
-        return self.medical_log.new({"DateTime": at_datetime,
-                                     "SubjectID": self.get_id(),
-                                     "SubjectName": self.get_name(),
-                                     "ObjectID": doctor_id,
-                                     "ObjectName": doctor_name,
-                                     "Action": Action.RECOVER,
-                                     "Details": f"{details}",
-                                     "Severity": Severity.VERY_LOW,  # all recovery declarations are low urgency.
-                                     "Treatment": "NA"  # treatment should only be described when a diagnosis is made.
-                                     })
+            self.__under_treatment = False
+            self.treatments.remove()  # remove all treatments
+
+            return self.medical_log.new({"DateTime": at_datetime,
+                                         "SubjectID": self.id,
+                                         "SubjectName": self.name,
+                                         "ObjectID": doctor_id,
+                                         "ObjectName": doctor_name,
+                                         "Action": Action.RECOVER,
+                                         "Details": f"{details}",
+                                         "Severity": Severity.VERY_LOW,  # all recovery declarations are low urgency.
+                                         "Treatment": "NA"
+                                         # treatment should only be described when a diagnosis is made.
+                                         })
+        except AssertionError as e:
+            print(f"[ERROR] {e} Event not added to {self.medical_log.name} Log.\n")
+            return None

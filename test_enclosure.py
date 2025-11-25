@@ -59,7 +59,7 @@ class TestEnclosure:
         expected = (
             f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
             " > Species: None\n"
-            " > Size: 10 squared centimeters\n"
+            " > Size: 10 squared meters\n"
             " > Cleanliness: Very High\n"
             " > Inhabitants: 0\n"
         )
@@ -87,7 +87,7 @@ class TestEnclosure:
         expected1 = (
             f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
             " > Species: King Cobra\n"
-            " > Size: 10 squared centimeters\n"
+            " > Size: 10 squared meters\n"
             " > Cleanliness: Very High\n"
             " > Inhabitants: 1\n"
             f"   > Shai-Hulud_{cobra1.id}\n"
@@ -102,7 +102,7 @@ class TestEnclosure:
         expected2 = (
             f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
             " > Species: King Cobra\n"
-            " > Size: 10 squared centimeters\n"
+            " > Size: 10 squared meters\n"
             " > Cleanliness: Very High\n"
             " > Inhabitants: 2\n"
             f"   > Shai-Hulud_{cobra1.id}\n"
@@ -140,7 +140,7 @@ class TestEnclosure:
         expected = (
             f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
             " > Species: King Cobra\n"
-            " > Size: 10 squared centimeters\n"
+            " > Size: 10 squared meters\n"
             " > Cleanliness: Very High\n"
             " > Inhabitants: 1\n"
             f"   > Shai-Hulud_{cobra1.id}\n"
@@ -186,7 +186,7 @@ class TestEnclosure:
         expected_empty = (
             f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
             " > Species: None\n"
-            " > Size: 10 squared centimeters\n"
+            " > Size: 10 squared meters\n"
             " > Cleanliness: Very High\n"
             " > Inhabitants: 0\n"
         )
@@ -197,7 +197,7 @@ class TestEnclosure:
         expected_mouse = (
             f"ID: {desert1.id} | NAME: Dune | ENVIRONMENTAL TYPE: Desert\n"
             " > Species: Brown Desert Mouse\n"
-            " > Size: 10 squared centimeters\n"
+            " > Size: 10 squared meters\n"
             " > Cleanliness: Very High\n"
             " > Inhabitants: 1\n"
             f"   > Muad'Dib_{desert_mouse.id}\n"

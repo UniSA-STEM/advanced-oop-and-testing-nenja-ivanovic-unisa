@@ -1,6 +1,6 @@
 """
 File: enclosure.py
-Description: Contains the Enclosure class which represents the habitats that Animals can live in within the zoo.
+Description: Contains the Enclosure class which represents the enclosed areas that Animals can live in within the zoo.
 Enclosures have an EnvironmentalType and can only house one species of Animal.
 Author: Nenja Ivanovic
 ID: 110462390
@@ -22,15 +22,20 @@ class Enclosure(RequiresCleaning):
         Initialise new Enclosure instances.
         :param name: The name of the enclosure.
         :param environmental_type: The environmental type the animal lives in.
-        :param size: the area contained by the enclosure in square cm.
+        :param size: the area contained by the enclosure in square meters.
         """
         self.__name = name
         self.__size = size
         self.__species = None  # The species of animal housed by the enclosure (default is None).
         self.__inhabitants = []  # list containing the animals living in the enclosure.
 
-        if not isinstance(environmental_type, EnvironmentalType):
-            raise TypeError("Environmental type of enclosure must be an EnvironmentalType enumeration.")
+        try:
+            if not isinstance(environmental_type, EnvironmentalType):
+                raise TypeError("Enclosure environmental_type must be an EnvironmentalType enumeration.\n")
+        except TypeError as e:
+            environmental_type = EnvironmentalType.GRASS  # revert to default
+            print(f"[WARNING] {e} Default value of EnvironmentalType.GRASS years has been assumed.\n")
+
         self.__environmental_type = environmental_type
 
         self.__id = "E" + str(Enclosure._next_id)  # E to represent 'Enclosure'
@@ -47,7 +52,7 @@ class Enclosure(RequiresCleaning):
             inhabitants_string += f"\n   > {inhabitant.name}_{inhabitant.id}"
         return (f"ID: {self.id} | NAME: {self.__name} | ENVIRONMENTAL TYPE: {self.__environmental_type.value}"
                 f"\n > Species: {self.species}"
-                f"\n > Size: {self.size} squared centimeters"
+                f"\n > Size: {self.size} squared meters"
                 f"\n > Cleanliness: {self.cleanliness.description}"
                 + inhabitants_string + f"\n")
 
@@ -67,7 +72,7 @@ class Enclosure(RequiresCleaning):
         return self.__id
 
     def get_size(self) -> int:
-        """Return an integer representing the enclosure's area in square centimeters."""
+        """Return an integer representing the enclosure's area in square meters."""
         return self.__size
 
     def get_species(self) -> str:
@@ -101,21 +106,25 @@ class Enclosure(RequiresCleaning):
         :param animal: The animal to add to the enclosure.
         :return: None
         """
-        if not isinstance(animal, Animal):
-            raise TypeError("Only Animal objects can live in the enclosure.")
-        if animal.under_treatment:
-            raise ValueError(f"{animal.name}_{animal.id} is under treatment so they cannot be relocated at this time.")
-        if animal.habitat != self.environmental_type:
-            raise ValueError(
-                f"{animal.name}_{animal.id} requires a(n) {animal.habitat.value.upper()} habitat and cannot live in "
-                f"a(n) {self.environmental_type.value.upper()} enclosure.")
-        if (len(self.inhabitants) > 0) & (self.__species != animal.species):
-            raise ValueError(
-                f"{animal.name}_{animal.id} cannot live in {self.__name}_{self.id} as animals of a different"
-                f" species already live there ({self.species}).")
-        if animal not in self.inhabitants:  # unnecessary if animal already is in enclosure.
-            self.__inhabitants.append(animal)
-            self.__species = animal.species  # update species attribute in case the enclosure was previously empty.
+        try:
+            if not isinstance(animal, Animal):
+                raise TypeError("Only Animal objects can live in the enclosure.")
+            if animal.under_treatment:
+                raise ValueError(
+                    f"{animal.name}_{animal.id} is under treatment so they cannot be relocated at this time.")
+            if animal.habitat != self.environmental_type:
+                raise ValueError(
+                    f"{animal.name}_{animal.id} requires a(n) {animal.habitat.value.upper()} habitat and cannot live in "
+                    f"a(n) {self.environmental_type.value.upper()} enclosure.")
+            if (len(self.inhabitants) > 0) & (self.__species != animal.species):
+                raise ValueError(
+                    f"{animal.name}_{animal.id} cannot live in {self.__name}_{self.id} as animals of a different"
+                    f" species already live there ({self.species}).")
+            if animal not in self.inhabitants:  # unnecessary if animal already is in enclosure.
+                self.__inhabitants.append(animal)
+                self.__species = animal.species  # update species attribute in case the enclosure was previously empty.
+        except (TypeError, ValueError) as e:
+            print(f"[ERROR] {e} No change made.\n")
 
     def remove_animal(self, animal: Animal):
         """
@@ -123,13 +132,16 @@ class Enclosure(RequiresCleaning):
         :param animal: The animal to remove from the enclosure.
         :return: None
         """
-        assert len(self.inhabitants) != 0, f"{self.__name}_{self.id} has no occupants to remove."
-        if not isinstance(animal, Animal):
-            raise TypeError("Only Animal objects live in the enclosure.")
-        if animal.under_treatment:
-            raise ValueError(f"{animal.name}_{animal.id} is under treatment so they cannot be relocated at this time.")
+        try:
+            if not isinstance(animal, Animal):
+                raise TypeError("Only Animal objects can be removed from enclosure.")
+            if animal.under_treatment:
+                raise ValueError(
+                    f"{animal.name}_{animal.id} is under treatment so they cannot be relocated at this time.")
 
-        assert animal in self.inhabitants, f"{animal.name}_{animal.id} does not live in {self.__name}_{self.id}"
-        self.inhabitants.remove(animal)
-        if len(self.inhabitants) == 0:
-            self.__species = None
+            if animal in self.inhabitants:
+                self.inhabitants.remove(animal)
+                if len(self.inhabitants) == 0:
+                    self.__species = None
+        except (TypeError, ValueError) as e:
+            print(f"[ERROR] {e} No change made.\n")

@@ -7,6 +7,7 @@ ID: 110462390
 Username: ivany005
 This is my own work as defined by the University's Academic Integrity Policy.
 """
+from datetime import datetime
 
 from action import Action
 from animal import Animal
@@ -20,19 +21,26 @@ class Mammal(Animal):
         Initialise new Mammal instances.
         :param name: The name of the mammal.
         :param species: The specific species of mammal that the instance is.
-        :param sound: The sound that the animal makes (if any; default is None).
+        :param sound: The sound that the animal makes.
         :param fur_colour: The primary colour of the mammal's fur.
         :param is_nocturnal: Whether the mammal is primarily active at night (False by default).
         :param age: The age of the mammal in years (default is 0).
         :param habitat: The environmental type the Mammal lives in (default is GRASS).
         """
-        super().__init__(name, species, habitat, age, sound)
+        super().__init__(name, species, sound, habitat, age)
 
-        if not isinstance(fur_colour, str):
-            raise TypeError("A mammal's 'fur_colour' attribute must be provided as a string.")
-
-        if not isinstance(is_nocturnal, bool):
-            raise TypeError("A mammal's 'is_nocturnal' attribute must be boolean.")
+        try:
+            if not isinstance(is_nocturnal, bool):
+                raise TypeError
+        except TypeError:
+            if is_nocturnal == "True":
+                is_nocturnal = True
+            elif is_nocturnal == "False":
+                is_nocturnal = False
+            else:
+                is_nocturnal = False  # revert to default
+                print(f"[WARNING] Provided is_nocturnal value for Mammal is not boolean, so default value of "
+                      f"False has been assumed.\n")
 
         self.__fur_colour = fur_colour
         self.__is_nocturnal = is_nocturnal
@@ -44,10 +52,10 @@ class Mammal(Animal):
             f" > Nocturnal: {self.__is_nocturnal}\n"
         )
 
-    def groom(self, at_datetime):
+    def groom(self, at_datetime: datetime = datetime.now()):
         """
         Log that the Mammal grooms its fur.
-        :param at_datetime: The date and time at which the mammal groomed itself.
+        :param at_datetime: The date and time at which the mammal groomed itself (default is when the method was called)
         :return: None
         """
         self.log.new({

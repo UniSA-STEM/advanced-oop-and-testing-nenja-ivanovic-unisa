@@ -12,7 +12,6 @@ from datetime import time
 import pandas as pd
 from pandas import DataFrame
 
-from action import Action
 from data_record import DataRecord
 
 
@@ -31,7 +30,7 @@ class Schedule(DataRecord):
             {"Time": pd.Series(dtype="object")})  # time object - no date required as schedule is daily.
         self.data = pd.concat([self.data, cols_to_add])
 
-    def new(self, new_row: dict) -> int:
+    def new(self, new_row: dict) -> int | None:
         """
         Add a new row of information to the log.
 
@@ -46,15 +45,23 @@ class Schedule(DataRecord):
             - 'Details' (str): Further description of the action to be performed.
         :return: The reference number of the new row added.
         """
+        try:
+            if not isinstance(new_row, dict):
+                raise TypeError("The new row of data must be provided as a Dictionary object.")
+            assert set(self.data.columns.values) == set(new_row.keys()), (
+                f"The dictionary keys of the new row must match the existing columns of the Schedule data attribute.")
+            if not isinstance(new_row.get("Time"),
+                              time):  # the time class will internally handle formatting issues.
+                raise TypeError("The Time of a new Schedule record must be a time object.")
+            return super().new(new_row)
 
-        if not isinstance(new_row.get("Time"),
-                          time):  # the time class will internally handle formatting issues.
-            raise TypeError("The 'Time' value of the new row must be a time object.")
+        except AssertionError as e:
+            print(f"[ERROR] {e}\nNo change made {self.name} Schedule.\n")
+            return None
 
-        if not isinstance(new_row.get("Action"), Action):
-            raise TypeError("The logged action must be from the Action enumeration.")
-
-        return super().new(new_row)
+        except TypeError as e:
+            print(f"[ERROR] {e} No changes made to {self.name} Schedule.\n")
+            return None
 
     def __str__(self) -> str:
         """
@@ -96,5 +103,13 @@ class Schedule(DataRecord):
         :param before_time: The end of the time range associated with the record(s) to be removed.
         :return: None
         """
-        # replace the existing schedule with a version where entries that match 'time' conditions are excluded:
-        self.data = self.data[(after_time > self.data['Time']) | (self.data['Time'] > before_time)]
+        try:
+            if not (isinstance(after_time, time) and isinstance(before_time, time)):
+                raise TypeError("Both before_time and after_time must both be time objects in order to be able"
+                                "to determine what entries to remove from a Schedule.")
+
+            # replace the existing schedule with a version where entries that match 'time' conditions are excluded:
+            self.data = self.data[(after_time > self.data['Time']) | (self.data['Time'] > before_time)]
+
+        except TypeError as e:
+            print(f"[ERROR] {e} No entries removed from {self.name} Schedule.\n")
