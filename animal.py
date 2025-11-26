@@ -35,7 +35,7 @@ class Animal(RequiresCleaning, HasHealth):
         self.__sound = sound
 
         try:
-            if age >= 0:
+            if age < 0:
                 raise ValueError
         except ValueError:
             age = abs(age)  # assume age provided was meant to be positive

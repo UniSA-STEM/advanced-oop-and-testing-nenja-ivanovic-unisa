@@ -102,9 +102,13 @@ class Staff(ABC):
             if isinstance(assignment, Animal):
                 if assignment not in self.animal_assignments:  # duplicates not allowed
                     self.animal_assignments.append(assignment)
+                else:
+                    return None
             elif isinstance(assignment, Enclosure):
                 if assignment not in self.enclosure_assignments:  # duplicates not allowed
                     self.enclosure_assignments.append(assignment)
+                else:
+                    return None
             else:
                 raise TypeError(f"Staff members cannot be assigned to {assignment.__class__.__name__} objects.")
 

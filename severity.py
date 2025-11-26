@@ -44,7 +44,7 @@ class Severity(Enum):
             if num_levels < 0:  # level is decreasing
                 min_possible_level = min([severity.level for severity in Severity])
                 lookup_level = max(lookup_level, min_possible_level)  # ensure level to look up is not lower than min
-            if num_levels < 0:  # level is decreasing
+            if num_levels > 0:  # level is increasing
                 max_possible_level = max([severity.level for severity in Severity])
                 lookup_level = min(lookup_level, max_possible_level)  # ensure level to look up is not higher than max
 

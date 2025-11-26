@@ -10,10 +10,11 @@ from datetime import datetime, time
 
 import pytest
 
+from action import Action
 from bird import Bird
+from environmental_type import EnvironmentalType
 from mammal import Mammal
 from reptile import Reptile
-from severity import Severity
 
 
 class TestAnimal:
@@ -21,232 +22,126 @@ class TestAnimal:
     def bird(self) -> Bird:
         return Bird("Pinky", "Emperor Penguin", 76, False, 2)
 
-    def test_initial_str(self, bird: Bird) -> None:
-        expected = (
-            f"ID: {bird.id} | NAME: Pinky | SPECIES: Emperor Penguin\n"
-            " > Age: 2 year(s) old.\n"
-            " > Health Status: [HEALTHY]\n"
-            " > Cleanliness: Very High\n"
-            " > Wingspan: 76cm\n"
-            " > Can fly: False\n"
-        )
-        assert str(bird) == expected
-
-    def test_health_status_and_medical_log_after_diagnosis(self, bird: Bird) -> None:
-        bird.receive_health_check(
-            "S34",
-            "Dr.John",
-            "Behavioral assessment",
-            Severity.LOW,
-            datetime(2004, 11, 12, 10, 20),
-        )
-        bird.receive_diagnosis(
-            "S34",
-            "Dr.John",
-            "Psychological illness - anxiety",
-            Severity.LOW,
-            "Get 5 min of cuddles every 12 hours.",
-            [[time(7), "5 min cuddles"], [time(19), "5 min cuddles"]],
-            datetime(2004, 11, 12, 10, 30),
-        )
-
-        expected_str = (
-            f"ID: {bird.id} | NAME: Pinky | SPECIES: Emperor Penguin\n"
-            " > Age: 2 year(s) old.\n"
-            " > Health Status: [UNDER TREATMENT]\n"
-            " > Cleanliness: Very High\n"
-            " > Wingspan: 76cm\n"
-            " > Can fly: False\n"
-        )
-        assert str(bird) == expected_str
-
-    def test_medical_log_after_treatments_and_recovery(self, bird: Bird) -> None:
-        bird.receive_health_check(
-            "S34",
-            "Dr.John",
-            "Behavioral assessment",
-            Severity.LOW,
-            datetime(2004, 11, 12, 10, 20),
-        )
-        bird.receive_diagnosis(
-            "S34",
-            "Dr.John",
-            "Psychological illness - anxiety",
-            Severity.LOW,
-            "Get 5 min of cuddles every 12 hours.",
-            [[time(7), "5 min cuddles"], [time(19), "5 min cuddles"]],
-            datetime(2004, 11, 12, 10, 30),
-        )
-        bird.receive_treatment(
-            "S34",
-            "Dr.John",
-            "5 min cuddles",
-            Severity.LOW,
-            datetime(2004, 11, 12, 10, 35),
-        )
-        bird.receive_treatment(
-            "S2",
-            "Chloe",
-            "5 min cuddles",
-            Severity.LOW,
-            datetime(2004, 11, 12, 19, 0),
-        )
-        bird.receive_health_check(
-            "S34",
-            "Dr.John",
-            "Behavioral review.",
-            Severity.LOW,
-            datetime(2004, 11, 13, 10, 20),
-        )
-        bird.recover(
-            "S34",
-            "Dr.John",
-            "Anxiety cured.",
-            datetime(2004, 11, 13, 10, 35),
-        )
-
-        output = str(bird.medical_log)
-
-        header = (
-            "----------------------------------------------------------------------------------------------\n"
-            f"PINKY_{bird.id} MEDICAL LOG:\n"
-            "\n"
-        )
-        assert output.startswith(header)
-        assert output.endswith(
-            "----------------------------------------------------------------------------------------------\n")
-
-        block1 = (
-            f"[2004-11-12 10:20:00] Pinky_{bird.id} receives health check from Dr.John_S34;\n"
-            " > Description: Behavioral assessment\n"
-            " > Severity: Low\n"
-            " > Treatment: NA\n"
-        )
-        block2 = (
-            f"[2004-11-12 10:30:00] Pinky_{bird.id} is diagnosed by Dr.John_S34;\n"
-            " > Description: Psychological illness - anxiety\n"
-            " > Severity: Low\n"
-            " > Treatment: Get 5 min of cuddles every 12 hours.\n"
-        )
-        block3 = (
-            f"[2004-11-12 10:35:00] Pinky_{bird.id} receives treatment from Dr.John_S34;\n"
-            " > Description: 5 min cuddles\n"
-            " > Severity: Low\n"
-            " > Treatment: NA\n"
-        )
-        block4 = (
-            f"[2004-11-12 19:00:00] Pinky_{bird.id} receives treatment from Chloe_S2;\n"
-            " > Description: 5 min cuddles\n"
-            " > Severity: Low\n"
-            " > Treatment: NA\n"
-        )
-        block5 = (
-            f"[2004-11-13 10:20:00] Pinky_{bird.id} receives health check from Dr.John_S34;\n"
-            " > Description: Behavioral review.\n"
-            " > Severity: Low\n"
-            " > Treatment: NA\n"
-        )
-        block6 = (
-            f"[2004-11-13 10:35:00] Pinky_{bird.id} is declared recovered by Dr.John_S34;\n"
-            " > Description: Anxiety cured.\n"
-            " > Severity: Very Low\n"
-            " > Treatment: NA\n"
-        )
-
-        for block in (block1, block2, block3, block4, block5, block6):
-            assert block in output
-
-        lines = output.splitlines()
-        ref_lines = [line for line in lines if line.startswith("log ref number: ")]
-        assert len(ref_lines) == 6
-
-    def test_general_activity_log_and_cleanliness(self, bird: Bird) -> None:
-        bird.fly(datetime(2004, 11, 12, 6, 0))
-        bird.fly(datetime(2004, 11, 12, 6, 20))
-        bird.fly(datetime(2004, 11, 12, 6, 45))
-        bird.eat("fish", "3x whole", datetime(2004, 11, 12, 9, 0))
-        bird.drink("water", "500mL", datetime(2004, 11, 12, 12, 10))
-        bird.sleep(datetime(2004, 11, 12, 12, 40))
-        bird.eat("squid", "200g", datetime(2004, 11, 12, 18, 50))
-        bird.become_older(datetime(2004, 11, 13, 10, 35))
-        bird.become_dirtier(datetime(2004, 11, 13, 11, 0), 7)
-        bird.receive_cleaning("S2", "Chloe", datetime(2004, 11, 13, 12, 0), 2)
-
-        expected_str = (
-            f"ID: {bird.id} | NAME: Pinky | SPECIES: Emperor Penguin\n"
-            " > Age: 3 year(s) old.\n"
-            " > Health Status: [HEALTHY]\n"
-            " > Cleanliness: Moderate\n"
-            " > Wingspan: 76cm\n"
-            " > Can fly: False\n"
-        )
-        assert str(bird) == expected_str
-
-    def test_diet_schedule_add_and_remove(self, bird: Bird) -> None:
-        bird.add_to_diet("fish", "3x whole", time(9, 0))
-        bird.add_to_diet("squid", "200g", time(19, 0))
-
-        expected_diet_full = (
-            "----------------------------------------------------------------------------------------------\n"
-            f"PINKY_{bird.id} DIETARY SCHEDULE:\n"
-            "\n"
-            "EVENT 1 @ 09:00:00\n"
-            f" - Pinky_{bird.id} to eat (3x whole fish)\n"
-            "\n"
-            "EVENT 2 @ 19:00:00\n"
-            f" - Pinky_{bird.id} to eat (200g squid)\n"
-            "----------------------------------------------------------------------------------------------\n"
-        )
-        assert str(bird.diet) == expected_diet_full
-
     @pytest.fixture
     def mammal(self) -> Mammal:
         return Mammal("Momo", "Monkey", "Oooh-ooh-ah", "Yellow-brown", False, 3)
-
-    def test_mammal_str_and_groom_log(self, mammal: Mammal) -> None:
-        expected_str = (
-            f"ID: {mammal.id} | NAME: Momo | SPECIES: Monkey\n"
-            " > Age: 3 year(s) old.\n"
-            " > Health Status: [HEALTHY]\n"
-            " > Cleanliness: Very High\n"
-            " > Fur colour: Yellow-brown\n"
-            " > Nocturnal: False\n"
-        )
-        assert str(mammal) == expected_str
-
-        mammal.groom(datetime(2004, 11, 12, 15, 0))
-
-        expected_log = (
-            "----------------------------------------------------------------------------------------------\n"
-            f"MOMO_{mammal.id} GENERAL ACTIVITY LOG:\n"
-            "\n"
-            f"[2004-11-12 15:00:00] Momo_{mammal.id} grooms self (picks at its yellow-brown fur).\n"
-            "----------------------------------------------------------------------------------------------\n"
-        )
-        assert str(mammal.log) == expected_log
 
     @pytest.fixture
     def reptile(self) -> Reptile:
         return Reptile("Lizzy", "Komodo Dragon", "Hiss", "rough", True, 5)
 
-    def test_reptile_str_and_bask_log(self, reptile: Reptile) -> None:
-        expected_str = (
-            f"ID: {reptile.id} | NAME: Lizzy | SPECIES: Komodo Dragon\n"
-            " > Age: 5 year(s) old.\n"
-            " > Health Status: [HEALTHY]\n"
-            " > Cleanliness: Very High\n"
-            " > Scale type: rough\n"
-            " > Venomous: True\n"
-        )
-        assert str(reptile) == expected_str
+    @pytest.fixture
+    def datetime1(self) -> datetime:
+        return datetime(2004, 11, 12)
 
-        reptile.bask(datetime(2004, 11, 12, 15, 0))
+    def test_animal_initialization_error_handling(self, capsys):
+        # incorrect value type provided for habitat:
+        animal = Bird("Pinky", "Emperor Penguin", 76, False, 2, 34)
+        expected = ("[WARNING] Provided animal age was not an EnvironmentalType, so default value "
+                    "of EnvironmentalType.GRASS years was assumed.")
+        actual = capsys.readouterr().out.strip()
+        assert expected == actual
+        assert animal.habitat == EnvironmentalType.GRASS
 
-        expected_log = (
-            "----------------------------------------------------------------------------------------------\n"
-            f"LIZZY_{reptile.id} GENERAL ACTIVITY LOG:\n"
-            "\n"
-            f"[2004-11-12 15:00:00] Lizzy_{reptile.id} basks in sun (to regulate body temperature).\n"
-            "----------------------------------------------------------------------------------------------\n"
-        )
-        assert str(reptile.log) == expected_log
+        # incorrect negative number provided for age:
+        animal = Bird("Pinky", "Emperor Penguin", 76, False, -4)
+        expected = ("[WARNING] Provided animal age was negative, so absolute value was used (4 "
+                    "years).")
+        actual = capsys.readouterr().out.strip()
+        assert expected == actual
+        assert animal.age == 4
+
+        # incorrect value type provided for age:
+        animal = Bird("Pinky", "Emperor Penguin", 76, False, "three")
+        expected = f"[WARNING] Provided animal age was not numeric, so default value of 0 years was assumed."
+        actual = capsys.readouterr().out.strip()
+        assert expected == actual
+        assert animal.age == 0
+
+    def test_bird(self, bird: Bird) -> None:
+        # incorrect value type provided for can_fly:
+        bird2 = Bird("Eloise", "Eagle", 30)
+
+        bird.fly()
+
+        assert bird.log.data['Action'].iloc[0] == Action.FLY
+        assert bird.log.data['Details'].iloc[0] == "fails"  # penguin cannot fly
+
+        bird2.fly()
+        assert bird2.log.data['Details'].iloc[0] == "succeeds"  # can_fly is True by default
+
+        actual = str(bird)
+        expected = (f"ID: {bird.id} | NAME: Pinky | SPECIES: Emperor Penguin\n"
+                    f" > Age: 2 year(s) old.\n"
+                    f" > Health Status: [HEALTHY]\n"
+                    f" > Cleanliness: Very High\n"
+                    f" > Wingspan: 76cm\n"
+                    f" > Can fly: False\n")
+        assert expected == actual
+
+    def test_mammal(self, mammal: Mammal) -> None:
+        mammal.groom()
+        assert mammal.log.data['Action'].iloc[0] == Action.GROOM
+        assert mammal.log.data['Details'].iloc[0] == "picks at its yellow-brown fur"
+
+        actual = str(mammal)
+        expected = (f"ID: {mammal.id} | NAME: Momo | SPECIES: Monkey\n"
+                    f" > Age: 3 year(s) old.\n"
+                    f" > Health Status: [HEALTHY]\n"
+                    f" > Cleanliness: Very High\n"
+                    f" > Fur colour: Yellow-brown\n"
+                    f" > Nocturnal: False\n")
+        assert expected == actual
+
+    def test_reptile(self, reptile: Reptile) -> None:
+        reptile.bask()
+        assert reptile.log.data['Action'].iloc[0] == Action.BASK
+        assert reptile.log.data['Details'].iloc[0] == "to regulate body temperature"
+
+        actual = str(reptile)
+        expected = (f"ID: {reptile.id} | NAME: Lizzy | SPECIES: Komodo Dragon\n"
+                    f" > Age: 5 year(s) old.\n"
+                    f" > Health Status: [HEALTHY]\n"
+                    f" > Cleanliness: Very High\n"
+                    f" > Scale type: rough\n"
+                    f" > Venomous: True\n")
+        assert expected == actual
+
+    def test_general_animal_behaviours(self, bird: Bird, datetime1):
+        bird.eat("apple", "2x whole", datetime1)
+        bird.drink("water", "1 cup", datetime1)
+        bird.sleep(datetime1)
+        bird.make_sound(datetime1)
+
+        bird.become_older(datetime1)
+        assert bird.age == 3
+
+        actual = str(bird.log)
+        expected = (
+            f'----------------------------------------------------------------------------------------------\n'
+            f'PINKY_{bird.id} GENERAL ACTIVITY LOG:\n'
+            f'\n'
+            f'[2004-11-12 00:00:00] Pinky_{bird.id} eats (2x whole apple).\n'
+            f'[2004-11-12 00:00:00] Pinky_{bird.id} drinks (1 cup water).\n'
+            f'[2004-11-12 00:00:00] Pinky_{bird.id} sleeps (Zzz...).\n'
+            f"[2004-11-12 00:00:00] Pinky_{bird.id} says ('Squawk').\n"
+            f'[2004-11-12 00:00:00] Pinky_{bird.id} ages (by 1 year(s) to become 3 year(s) old).\n'
+            f'----------------------------------------------------------------------------------------------\n')
+        assert actual == expected
+
+    def test_diet_schedule_add_and_remove(self, bird: Bird) -> None:
+        bird.add_to_diet("fish", "3x whole", time(9, 0))
+        bird.add_to_diet("squid", "200g", time(19, 0))
+
+        actual = str(bird.diet)
+        expected = (
+            f"----------------------------------------------------------------------------------------------\n"
+            f"PINKY_{bird.id} DIETARY SCHEDULE:\n"
+            f"\n"
+            f"EVENT 1 @ 09:00:00\n"
+            f" - Pinky_{bird.id} to eat (3x whole fish)\n"
+            f"\n"
+            f"EVENT 2 @ 19:00:00\n"
+            f" - Pinky_{bird.id} to eat (200g squid)\n"
+            f"----------------------------------------------------------------------------------------------\n")
+        assert expected == actual

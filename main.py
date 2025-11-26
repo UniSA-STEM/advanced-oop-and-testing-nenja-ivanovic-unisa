@@ -47,10 +47,7 @@ for animal in (cobra1, cobra2, rattlesnake, desert_mouse, penguin):
     zoo.add_animal(animal)
 
 # Example of invalid animal input -----------------------------------------
-try:
-    zoo.add_animal("not an animal")
-except TypeError as e:
-    print(f"[ERROR] {e}")
+zoo.add_animal("not an animal")
 
 # 4. Set up diets ------------------------------------------------------------
 cobra1.add_to_diet("Raw Chicken", "200g", time(10))
@@ -79,10 +76,7 @@ zoo.assign_animal_to_enclosure(desert_mouse, desert_hideout)
 zoo.assign_animal_to_enclosure(penguin, blue_lagoon)
 
 # Invalid assignment: wrong habitat (mouse into aquatic enclosure) -------
-try:
-    zoo.assign_animal_to_enclosure(desert_mouse, blue_lagoon)
-except ValueError as e:
-    print(f"[ERROR] {e}")
+zoo.assign_animal_to_enclosure(desert_mouse, blue_lagoon)
 
 # 6. Add staff (Zookeeper + Veterinarian) and assign enclosures ---------------
 keeper1 = Zookeeper("Daniel")
@@ -104,10 +98,7 @@ zoo.assign_staff_to_enclosure(vet2, blue_lagoon, assign_date)
 
 # Invalid staff assignment: staff not in this zoo -----------------------------
 temp_keeper = Zookeeper("Temp")
-try:
-    zoo.assign_staff_to_enclosure(temp_keeper, dune, assign_date)
-except ValueError as e:
-    print(f"[ERROR] {e}")
+zoo.assign_staff_to_enclosure(temp_keeper, dune, assign_date)
 
 # 7. Zookeeper: cleaning + feeding ----------------------------------------
 dune.become_dirtier(datetime(2004, 11, 12), 3)
@@ -120,84 +111,48 @@ keeper1.feed(cobra1, "Raw Chicken", "200g", datetime(2004, 11, 12, 10))
 keeper1.feed(cobra1, "Raw Lamb", "100g", datetime(2004, 11, 12, 18, 30))
 
 # 8a. Veterinarian: full health process for mouse ---------------------------
-vet1.check_health(
-    desert_mouse,
-    "Behavioral assessment",
-    Severity.LOW,
-    datetime(2004, 11, 12, 10, 20))
+vet1.check_health(desert_mouse, "Behavioral assessment", Severity.LOW,
+                  datetime(2004, 11, 12, 10, 20))
 
-vet1.diagnose(
-    desert_mouse,
-    "Psychological illness - anxiety",
-    Severity.LOW,
-    "Get 5 min of cuddles 2x per day.",
-    [[time(11), "5 min cuddles"], [time(19), "5 min cuddles"]],
-    datetime(2004, 11, 12, 10, 30))
+vet1.diagnose(desert_mouse, "Psychological illness - anxiety", Severity.LOW,
+              "Get 5 min of cuddles 2x per day.",
+              [[time(11), "5 min cuddles"], [time(19), "5 min cuddles"]],
+              datetime(2004, 11, 12, 10, 30))
 
 # Mouse is under treatment, cannot be moved ----------------------
-try:
-    zoo.move_animal(desert_mouse, desert_hideout, dune)
-except ValueError as e:
-    print(f"[ERROR] {e}")
+zoo.move_animal(desert_mouse, desert_hideout, dune)
 
-vet1.treat(
-    desert_mouse,
-    "5 min cuddles",
-    Severity.LOW,
-    datetime(2004, 11, 12, 11, 0))
+vet1.treat(desert_mouse, "5 min cuddles", Severity.LOW,
+           datetime(2004, 11, 12, 11, 0))
 
-vet1.treat(
-    desert_mouse,
-    "5 min cuddles",
-    Severity.LOW,
-    datetime(2004, 11, 12, 19, 0))
+vet1.treat(desert_mouse, "5 min cuddles", Severity.LOW,
+           datetime(2004, 11, 12, 19, 0))
 
-vet1.check_health(
-    desert_mouse,
-    "Behavioral review.",
-    Severity.LOW,
-    datetime(2004, 11, 13, 22, 20))
+vet1.check_health(desert_mouse, "Behavioral review.", Severity.LOW,
+                  datetime(2004, 11, 13, 22, 20))
 
-vet1.declare_recovery(
-    desert_mouse,
-    "Anxiety cured.",
-    datetime(2004, 11, 13, 22, 35))
+vet1.declare_recovery(desert_mouse, "Anxiety cured.",
+                      datetime(2004, 11, 13, 22, 35))
 
 # Now that mouse is healthy, moving and removing are allowed ---------
 zoo.move_animal(desert_mouse, desert_hideout, mouse_retreat)
 zoo.remove_enclosure(desert_hideout)  # now empty
 
 # 8b. Veterinarian: medical events for Penguin  -------------------------
-vet2.check_health(
-    penguin,
-    "Wing inspection",
-    Severity.LOW,
-    datetime(2004, 11, 14, 9, 0))
+vet2.check_health(penguin, "Wing inspection", Severity.LOW,
+                  datetime(2004, 11, 14, 9, 0))
 
-vet2.diagnose(
-    penguin,
-    "Minor wing strain",
-    Severity.VERY_LOW,
-    "No swims for 1 day.",
-    [[time(10), "Apply ice pack"], [time(18), "Recheck flexibility"]],
-    datetime(2004, 11, 14, 9, 15))
+vet2.diagnose(penguin, "Minor wing strain", Severity.VERY_LOW,
+              "No swims for 1 day.", [[time(10), "Apply ice pack"], [time(18), "Recheck flexibility"]],
+              datetime(2004, 11, 14, 9, 15))
 
-vet2.treat(
-    penguin,
-    "Apply ice pack",
-    Severity.VERY_LOW,
-    datetime(2004, 11, 14, 10, 0))
+vet2.treat(penguin, "Apply ice pack", Severity.VERY_LOW,
+           datetime(2004, 11, 14, 10, 0))
 
-vet2.check_health(
-    penguin,
-    "Wing follow-up check.",
-    Severity.VERY_LOW,
-    datetime(2004, 11, 15, 9, 0))
+vet2.check_health(penguin, "Wing follow-up check.", Severity.VERY_LOW,
+                  datetime(2004, 11, 15, 9, 0))
 
-vet2.declare_recovery(
-    penguin,
-    "Wing fully recovered.",
-    datetime(2004, 11, 15, 9, 30))
+vet2.declare_recovery(penguin, "Wing fully recovered.", datetime(2004, 11, 15, 9, 30))
 
 # 9. Bird: activity + ageing + cleanliness  -------------------------------------
 penguin.fly(datetime(2004, 11, 12, 6, 45))
